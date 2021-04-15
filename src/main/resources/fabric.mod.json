@@ -17,6 +17,9 @@
     ],
     "main": [
       "draylar.gamephases.GamePhases"
+    ],
+    "cardinal-components-entity": [
+      "draylar.gamephases.GamePhases"
     ]
   },
   "mixins": [
@@ -26,5 +29,10 @@
     "fabricloader": ">=0.11.3",
     "fabric": "*",
     "minecraft": "1.16.5"
+  },
+  "custom": {
+    "cardinal-components": [
+      "gamephases:phase"
+    ]
   }
 }

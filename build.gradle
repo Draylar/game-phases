@@ -10,6 +10,16 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
+repositories {
+    maven {
+        name = 'Ladysnake Mods'
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+    }
+
+    maven { url "https://maven.shedaniel.me" }
+    maven { url "https://www.cursemaven.com" }
+}
+
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -26,6 +36,12 @@ dependencies {
     modImplementation 'curse.maven:kubejs-395864:3269809'
     modImplementation 'curse.maven:rhino-416294:3187177'
     modImplementation 'me.shedaniel:architectury-fabric:1.7.117'
+
+    // CCA
+    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:2.8.0"
+    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:2.8.0"
+    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:2.8.0"
+    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:2.8.0"
 }
 
 processResources {
