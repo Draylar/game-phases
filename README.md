@@ -110,3 +110,22 @@ onEvent('gamephases.initialize', event => {
         .dimension('minecraft:the_nether');
 });
 ```
+
+---
+
+## Other KubeJS utilities
+
+Game Phases exposes several utility methods you can use with KubeJS to depend on phases.
+Here is an example script which prints an extra message to the player if they have the `phases:one` game phase:
+
+*Note: phases are synced S2C, which allows for client-side KubeJS scripts that depend on phases.*
+```javascript
+onEvent('player.chat', event => {
+    var hasOne = event.player.hasPhase('phases:one');
+    
+    // If the player has unlocked the 'phases:one' rank, print an extra message.
+    if(hasOne) {
+        event.player.tell('You are powerful.')
+    }
+});
+```
