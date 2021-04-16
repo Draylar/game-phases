@@ -25,6 +25,7 @@ import net.minecraft.util.TypedActionResult;
 
 public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
+    public static final Identifier PHASE_SYNC_ID = id("phase_sync");
     public static final ComponentKey<PhaseComponent> PHASES = ComponentRegistryV3.INSTANCE.getOrCreate(id("phases"), PhaseComponent.class);
 
     @Override
@@ -33,11 +34,13 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             new GamePhasesEventJS().post(ScriptType.SERVER, "gamephases.initialize");
+            GamePhasesEventJS.sync(server);
         });
 
         // When resource packs are reloaded, load Game Phase data.
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, manager, n) -> {
             new GamePhasesEventJS().post(ScriptType.SERVER, "gamephases.initialize");
+            GamePhasesEventJS.sync(server);
         });
 
         // Use KubeJS events for item handling

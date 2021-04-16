@@ -1,9 +1,15 @@
 package draylar.gamephases.api;
 
 import draylar.gamephases.GamePhases;
+import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +17,19 @@ import java.util.List;
 public class Phase {
 
     private final String id;
-    private final List<Item> blacklistedItems = new ArrayList<>();
-    private final List<String> blacklistedDimensions = new ArrayList<>();
+    private final List<Item> blacklistedItems;
+    private final List<String> blacklistedDimensions;
+
+    private Phase(String id, List<Item> blacklistedItems, List<String> blacklistedDimensions) {
+        this.id = id;
+        this.blacklistedItems = blacklistedItems;
+        this.blacklistedDimensions = blacklistedDimensions;
+    }
 
     public Phase(String id) {
         this.id = id;
+        this.blacklistedItems = new ArrayList<>();
+        this.blacklistedDimensions = new ArrayList<>();
     }
 
     public Phase item(Item item) {
@@ -42,5 +56,47 @@ public class Phase {
 
     public String getId() {
         return id;
+    }
+
+    public CompoundTag toTag() {
+        CompoundTag tag = new CompoundTag();
+        tag.putString("ID", id);
+
+        // write blacklisted items
+        ListTag itemList = new ListTag();
+        blacklistedItems.forEach(item -> {
+            Identifier id = Registry.ITEM.getId(item);
+            itemList.add(StringTag.of(id.toString()));
+        });
+
+        // write blacklisted dimensions
+        ListTag dimensionList = new ListTag();
+        blacklistedDimensions.forEach(dimension -> {
+            itemList.add(StringTag.of(id));
+        });
+
+        tag.put("Items", itemList);
+        tag.put("Dimensions", dimensionList);
+        return tag;
+    }
+
+    public static Phase fromTag(CompoundTag tag) {
+        String id = tag.getString("ID");
+        ListTag items = tag.getList("Items", NbtType.COMPOUND);
+        ListTag dimensions = tag.getList("Dimensions", NbtType.COMPOUND);
+
+        // read items
+        List<Item> readItems = new ArrayList<>();
+        items.forEach(element -> {
+            readItems.add(Registry.ITEM.get(new Identifier(element.asString())));
+        });
+
+        // read dimensions
+        List<String> readDimensions = new ArrayList<>();
+        dimensions.forEach(element -> {
+            readDimensions.add(element.asString());
+        });
+
+        return new Phase(id, readItems, readDimensions);
     }
 }
