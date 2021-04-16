@@ -1,4 +1,4 @@
-package draylar.gamephases.mixin;
+package draylar.gamephases.mixin.entity;
 
 import dev.latvian.kubejs.entity.EntityJS;
 import draylar.gamephases.GamePhases;
