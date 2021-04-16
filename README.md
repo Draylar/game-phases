@@ -7,6 +7,24 @@ Each phase has a prerequisite, and until that phase is unlocked, all content ins
 Game Phases relies on KubeJS for configuration and setup. All Game Phase scripts are in `server_scripts`.
 
 ---
+## Dependencies
+
+Due to Game Phases being a 'modpack-mod' (one that users would not normally install on their own),
+it does not include/JIJ dependencies with it. You will have to install these separately:
+- [FibLib](https://github.com/Haven-King/FibLib) by HavenKing
+- [Cardinal Components Base & World](https://www.curseforge.com/minecraft/mc-mods/cardinal-components) by Onyx Studios
+- [KubeJS](https://www.curseforge.com/minecraft/mc-mods/kubejs-fabric) by shedaniel & Latvian
+- [Rhino](https://www.curseforge.com/minecraft/mc-mods/rhino) by Latvian
+- [Architectury](https://www.curseforge.com/minecraft/mc-mods/architectury-fabric) by shedaniel
+
+### Compatibility
+
+Game Phases has built-in compatibility with the following mods:
+- [Roughly Enough Items](https://www.curseforge.com/minecraft/mc-mods/roughly-enough-items) by shedaniel
+    - Restricted items are hidden from the item view
+
+
+---
 ## Creating Phases
 
 Define a phase:
@@ -150,3 +168,7 @@ onEvent('player.chat', event => {
     }
 });
 ```
+---
+
+### License
+Game Phases is available under MIT.

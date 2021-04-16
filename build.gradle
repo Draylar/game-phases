@@ -43,12 +43,10 @@ dependencies {
 
     // CCA
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:2.8.0"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:2.8.0"
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:2.8.0"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:2.8.0"
 
+    // FibLib for block hiding
     modImplementation "dev.hephaestus:FibLib:${project.fiblib_version}"
-    include "dev.hephaestus:FibLib:${project.fiblib_version}"
 
     // REI
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:5.11.202"
