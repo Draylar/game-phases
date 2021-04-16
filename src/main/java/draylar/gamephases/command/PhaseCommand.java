@@ -19,27 +19,27 @@ public class PhaseCommand {
                     .build();
 
             LiteralCommandNode<ServerCommandSource> grant = CommandManager.literal("grant")
-                    .then(CommandManager.argument("phase", IdentifierArgumentType.identifier())
+                    .then(CommandManager.argument("phase", StringArgumentType.word())
                             .suggests((context, builder) -> {
                                 GamePhasesEventJS.getPhases().keySet().forEach(builder::suggest);
                                 return builder.buildFuture();
                             })
                             .executes(context -> {
-                                String phase = IdentifierArgumentType.getIdentifier(context, "phase").toString();
-                                GamePhases.getPhaseData(context.getSource().getPlayer()).set(new Identifier(phase), true);
+                                String phase = StringArgumentType.getString(context, "phase");
+                                GamePhases.getPhaseData(context.getSource().getPlayer()).set(phase, true);
                                 return 1;
                             }))
                     .build();
 
             LiteralCommandNode<ServerCommandSource> revoke = CommandManager.literal("revoke")
-                    .then(CommandManager.argument("phase", IdentifierArgumentType.identifier())
+                    .then(CommandManager.argument("phase", StringArgumentType.word())
                             .suggests((context, builder) -> {
                                 GamePhasesEventJS.getPhases().keySet().forEach(builder::suggest);
                                 return builder.buildFuture();
                             })
                             .executes(context -> {
-                                String phase = IdentifierArgumentType.getIdentifier(context, "phase").toString();
-                                GamePhases.getPhaseData(context.getSource().getPlayer()).set(new Identifier(phase), false);
+                                String phase = StringArgumentType.getString(context, "phase");
+                                GamePhases.getPhaseData(context.getSource().getPlayer()).set(phase, false);
                                 return 1;
                             }))
                     .build();

@@ -44,7 +44,7 @@ public class AdvancementRewardsMixin implements AdvancementRewardsManipulator {
             at = @At("HEAD"))
     private void applyPhase(ServerPlayerEntity player, CallbackInfo ci) {
         phases.forEach(entry -> {
-            GamePhases.getPhaseData(player).set(new Identifier(entry), true);
+            GamePhases.getPhaseData(player).set(entry, true);
         });
     }
 

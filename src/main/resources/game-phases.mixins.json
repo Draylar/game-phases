@@ -11,6 +11,7 @@
     "dimension.EntityDimensionTransferMixin",
     "dimension.FabricDimensionsMixin",
     "entity.EntityJSMixin",
+    "entity.SpawnerHelperMixin",
     "item.CraftingScreenHandlerMixin"
   ],
   "client": [

@@ -35,8 +35,8 @@ public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
      * @param phase phase to configure
      * @param status new status of the phase
      */
-    public void set(Identifier phase, boolean status) {
-        phases.put(phase.toString(), status);
+    public void set(String phase, boolean status) {
+        phases.put(phase, status);
         GamePhases.PHASES.sync(player);
     }
 

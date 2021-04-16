@@ -5,6 +5,7 @@ import dev.hephaestus.fiblib.api.BlockFibRegistry;
 import draylar.gamephases.GamePhases;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.block.Block;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +13,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 
 import java.util.ArrayList;
@@ -23,12 +25,14 @@ public class Phase {
     private final List<Item> blacklistedItems;
     private final List<Block> blacklistedBlocks;
     private final List<String> blacklistedDimensions;
+    private final List<Pair<EntityType<?>, Integer>> blacklistedEntities;
 
-    private Phase(String id, List<Item> blacklistedItems, List<Block> blacklistedBlocks, List<String> blacklistedDimensions) {
+    private Phase(String id, List<Item> blacklistedItems, List<Block> blacklistedBlocks, List<String> blacklistedDimensions, List<Pair<EntityType<?>, Integer>> blacklistedEntities) {
         this.id = id;
         this.blacklistedItems = blacklistedItems;
         this.blacklistedBlocks = blacklistedBlocks;
         this.blacklistedDimensions = blacklistedDimensions;
+        this.blacklistedEntities = blacklistedEntities;
     }
 
     public Phase(String id) {
@@ -36,6 +40,7 @@ public class Phase {
         this.blacklistedItems = new ArrayList<>();
         this.blacklistedBlocks = new ArrayList<>();
         this.blacklistedDimensions = new ArrayList<>();
+        this.blacklistedEntities = new ArrayList<>();
     }
 
     public Phase item(Item item) {
@@ -64,6 +69,16 @@ public class Phase {
         return this;
     }
 
+    public Phase entity(String entity) {
+        blacklistedEntities.add(new Pair<>(Registry.ENTITY_TYPE.get(new Identifier(entity)), 128));
+        return this;
+    }
+
+    public Phase entity(String entity, int radius) {
+        blacklistedEntities.add(new Pair<>(Registry.ENTITY_TYPE.get(new Identifier(entity)), radius));
+        return this;
+    }
+
     /**
      * @param item {@link Item} to check for phase restrictions
      * @return {@code true} if this phase restricts the given {@link Item}, otherwise {@code true}
@@ -78,6 +93,19 @@ public class Phase {
      */
     public boolean disallows(ServerWorld world) {
         return blacklistedDimensions.contains(world.getRegistryKey().getValue().toString());
+    }
+
+    public boolean disallows(EntityType<?> type) {
+        return blacklistedEntities.stream().anyMatch(pair -> pair.getLeft().equals(type));
+    }
+
+    public int getRadius(EntityType<?> type) {
+        return blacklistedEntities.stream()
+                .filter(pair -> pair.getLeft().equals(type))
+                .map(Pair::getRight)
+                .sorted()
+                .findFirst()
+                .orElse(-1);
     }
 
     /**
@@ -123,9 +151,19 @@ public class Phase {
             itemList.add(StringTag.of(id));
         });
 
+        // write blacklisted entities
+        ListTag entityList = new ListTag();
+        blacklistedEntities.forEach(entity -> {
+            CompoundTag compound = new CompoundTag();
+            compound.putString("ID", Registry.ENTITY_TYPE.getId(entity.getLeft()).toString());
+            compound.putInt("Range", entity.getRight());
+            entityList.add(compound);
+        });
+
         tag.put("Items", itemList);
         tag.put("Blocks", blockList);
         tag.put("Dimensions", dimensionList);
+        tag.put("Entities", entityList);
         return tag;
     }
 
@@ -134,6 +172,7 @@ public class Phase {
         ListTag items = tag.getList("Items", NbtType.COMPOUND);
         ListTag blocks = tag.getList("Blocks", NbtType.COMPOUND);
         ListTag dimensions = tag.getList("Dimensions", NbtType.COMPOUND);
+        ListTag entities = tag.getList("Entities", NbtType.COMPOUND);
 
         // read items
         List<Item> readItems = new ArrayList<>();
@@ -147,6 +186,13 @@ public class Phase {
         List<String> readDimensions = new ArrayList<>();
         dimensions.forEach(element -> readDimensions.add(element.asString()));
 
-        return new Phase(id, readItems, readBlocks, readDimensions);
+        // read entities
+        List<Pair<EntityType<?>, Integer>> readEntities = new ArrayList<>();
+        dimensions.forEach(element -> {
+            CompoundTag compound = (CompoundTag) element;
+            readEntities.add(new Pair<>(Registry.ENTITY_TYPE.get(new Identifier(compound.getString("ID"))), compound.getInt("Range")));
+        });
+
+        return new Phase(id, readItems, readBlocks, readDimensions, readEntities);
     }
 }
