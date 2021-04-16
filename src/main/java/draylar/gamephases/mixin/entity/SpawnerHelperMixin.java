@@ -33,7 +33,7 @@ public class SpawnerHelperMixin {
     private static boolean testPhaseValidity(SpawnHelper.Checker checker, EntityType<?> type, BlockPos pos, Chunk chunk) {
         // IF the entity has any restrictions:
         // Test the distance of all players in the world to the mob that is spawning.
-        // At least one player has to have the appropriate stage and be within the defined radius of the entity spawn for it to work.
+        // At least one player has to have the appropriate phase and be within the defined radius of the entity spawn for it to work.
         boolean allowed = GamePhasesEventJS.getPhases()
                 .values()
                 .stream()

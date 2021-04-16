@@ -49,7 +49,7 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
     }
 
     public void registerItemHandlers() {
-        // Block Item pickups if the player has not unlocked all required stages for the Item.
+        // Block Item pickups if the player has not unlocked all required phases for the Item.
         PlayerEvent.PICKUP_ITEM_PRE.register((player, itemEntity, stack) -> {
             Item item = stack.getItem();
 
