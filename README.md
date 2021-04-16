@@ -7,16 +7,16 @@ Each phase has a prerequisite, and until that phase is unlocked, all content ins
 Game Phases relies on KubeJS for configuration and setup. All Game Phase scripts are in `server_scripts`.
 
 ---
-## Creating Stages
+## Creating Phases
 
-Define a stage:
+Define a phase:
 ```javascript
 onEvent('gamephases.initialize', event => {
     event.phase('modpack:one');
 });
 ```
 
-Grant the stage to the user when they obtain stone:
+Grant the phase to the user when they obtain stone:
 ```json
 {
   "parent": "minecraft:recipes/root",
@@ -49,9 +49,9 @@ Grant the stage to the user when they obtain stone:
 
 ## Item Restrictions
 
-Game Phases allows you to restrict access to items based on stages.
-As a general overview, each stage can blacklist specific items. If a player does not meet the requirements
-for any stage that blacklists a given item, they will not be able to use it.
+Game Phases allows you to restrict access to items based on phases.
+As a general overview, each phase can blacklist specific items. If a player does not meet the requirements
+for any phase that blacklists a given item, they will not be able to use it.
 
 General blacklist restrictions include:
  - Blocked out item tooltip
@@ -61,13 +61,35 @@ General blacklist restrictions include:
  - Drop when equipped [NYI]
  - Invisible in REI and creative inventory [NYI]
 
-### Gating items behind a stage:
+### Gating items behind a phase:
 ```javascript
 onEvent('gamephases.initialize', event => {
     // Lock Iron Ingot & all entries under the mymod namespace under phase one
     event.phase('modpack:one');
         .item('minecraft:iron_ingot')
         .item('mymod:*');
+});
+```
+
+---
+
+## Block Restrictions
+
+Block Restrictions are similar to Item Restrictions. 
+[FibLib](https://github.com/Haven-King/FibLib) is used to restrict the visibility of hidden blocks,
+and additional tweaks are implemented to make the hidden block as non-visible as possible.
+
+General blacklist restrictions include:
+- Full visibility change through FibLib
+- Altered break drops [NYI]
+
+### Gating blocks behind a phase:
+*The following example hides Diamond Ore as stone*.
+```javascript
+onEvent('gamephases.initialize', event => {
+    // Replace stone with Diamond Ore
+    event.phase('modpack:one');
+        .block('minecraft:diamond_ore', 'minecraft:stone');
 });
 ```
 
@@ -80,7 +102,7 @@ You can prevent access to dimensions through dimension restrictions.
 General dimension restrictions include:
  - Any teleport to this dimension will be cancelled.
 
-### Gating dimensions behind a stage:
+### Gating dimensions behind a phase:
 ```javascript
 onEvent('gamephases.initialize', event => {
     // Lock Nether Entry behind 'modpack:one'
