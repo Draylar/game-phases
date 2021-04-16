@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AdvancementRewardsMixin",
+    "PlayerEntityMixin",
+    "block.AbstractBlockMixin",
     "dimension.EntityDimensionTransferMixin",
     "dimension.FabricDimensionsMixin"
   ],

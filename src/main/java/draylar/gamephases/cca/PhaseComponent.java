@@ -32,6 +32,10 @@ public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
         return phases.getOrDefault(phase, false);
     }
 
+    public boolean has(String phase) {
+        return phases.getOrDefault(GamePhasesEventJS.getPhases().get(phase), false);
+    }
+
     /**
      * Configures the status of the specified phase for the {@link net.minecraft.entity.player.PlayerEntity} this phase tracker is associated with.
      * @param phase phase to configure
