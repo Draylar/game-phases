@@ -1,6 +1,5 @@
 package draylar.gamephases;
 
-import dev.latvian.kubejs.item.ItemTooltipEventJS;
 import dev.latvian.kubejs.script.ScriptType;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
@@ -9,18 +8,19 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import draylar.gamephases.cca.PhaseComponent;
 import draylar.gamephases.kube.GamePhasesEventJS;
 import me.shedaniel.architectury.event.events.PlayerEvent;
-import me.shedaniel.architectury.event.events.TooltipEvent;
+import me.shedaniel.architectury.event.events.TickEvent;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
-
-import java.util.Map;
 
 public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
@@ -48,8 +48,8 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean b = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
-            return !b ? ActionResult.FAIL : ActionResult.PASS;
+            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+            return !allowed ? ActionResult.FAIL : ActionResult.PASS;
         });
 
         // Block Item use
@@ -59,8 +59,43 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean b = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
-            return !b ? TypedActionResult.fail(stackInHand) : TypedActionResult.pass(stackInHand);
+            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+            return !allowed ? TypedActionResult.fail(stackInHand) : TypedActionResult.pass(stackInHand);
+        });
+
+        // Prevent attacking with blocked items
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            ItemStack stackInHand = player.getStackInHand(hand);
+            Item item = stackInHand.getItem();
+
+            // Check all registered Phases.
+            // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
+            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+            return !allowed ? ActionResult.FAIL : ActionResult.PASS;
+        });
+
+        // Prevent breaking with blocked items
+        AttackBlockCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            ItemStack stackInHand = player.getStackInHand(hand);
+            Item item = stackInHand.getItem();
+
+            // Check all registered Phases.
+            // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
+            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+            return !allowed ? ActionResult.FAIL : ActionResult.PASS;
+        });
+
+        // When a player ticks, check their held item. If the held item is blocked, drop it.
+        TickEvent.PLAYER_PRE.register(player -> {
+            for(Hand hand : Hand.values()) {
+                ItemStack stack = player.getStackInHand(hand);
+                Item item = stack.getItem();
+                boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+                if(!allowed) {
+                    player.dropStack(stack.copy());
+                    stack.decrement(stack.getCount());
+                }
+            }
         });
     }
 
