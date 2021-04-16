@@ -113,6 +113,27 @@ onEvent('gamephases.initialize', event => {
 
 ---
 
+## Entity Restrictions
+
+You can prevent mob spawns through entity restrictions.
+When a mob attempts to spawn naturally, it will check phase restrictions.
+If any phase restricts the mob and no nearby players have passed the phase, the spawn will fail.
+
+By default, mob spawns check for players 128 blocks out from their position.
+By lowering this counter, you can prevent spawns near the player based on phase, while still allowing
+the mob to spawn further out, regardless of the current phase.
+
+### Gating entities behind a phase:
+```javascript
+onEvent('gamephases.initialize', event => {
+    // Prevent creepers from spawning around players that have not passed phase one
+    event.phase('one')
+        .entity('minecraft:creeper');
+});
+```
+
+---
+
 ## Other KubeJS utilities
 
 Game Phases exposes several utility methods you can use with KubeJS to depend on phases.
