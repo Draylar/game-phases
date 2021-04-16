@@ -12,7 +12,8 @@
     "dimension.FabricDimensionsMixin",
     "entity.EntityJSMixin",
     "entity.SpawnerHelperMixin",
-    "item.CraftingScreenHandlerMixin"
+    "item.CraftingScreenHandlerMixin",
+    "item.PlayerInventoryMixin"
   ],
   "client": [
   ],

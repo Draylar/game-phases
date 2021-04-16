@@ -58,7 +58,7 @@ General blacklist restrictions include:
  - Unable to use (right-click) the item
  - Prevent item pickups
  - Cancel any recipes involving the item
- - Drop when equipped [NYI]
+ - Drop when equipped
  - Invisible in REI and creative inventory [NYI]
 
 ### Gating items behind a phase:
@@ -81,7 +81,7 @@ and additional tweaks are implemented to make the hidden block as non-visible as
 
 General blacklist restrictions include:
 - Full visibility change through FibLib
-- Altered break drops [NYI]
+- Altered break drops
 
 ### Gating blocks behind a phase:
 *The following example hides Diamond Ore as stone*.
