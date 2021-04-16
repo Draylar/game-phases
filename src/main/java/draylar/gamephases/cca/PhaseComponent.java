@@ -3,10 +3,13 @@ package draylar.gamephases.cca;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import draylar.gamephases.GamePhases;
+import draylar.gamephases.compat.REICompat;
 import net.fabricmc.fabric.api.util.NbtType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
 
 import java.util.HashMap;
@@ -63,5 +66,15 @@ public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
         });
 
         tag.put("Phases", list);
+    }
+
+    @Override
+    public void applySyncPacket(PacketByteBuf buf) {
+        AutoSyncedComponent.super.applySyncPacket(buf);
+
+        // REI Compatibility
+        if(FabricLoader.getInstance().isModLoaded("rei")) {
+            REICompat.hideBlockedItems();
+        }
     }
 }

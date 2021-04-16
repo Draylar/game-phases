@@ -49,6 +49,10 @@ dependencies {
 
     modImplementation "dev.hephaestus:FibLib:${project.fiblib_version}"
     include "dev.hephaestus:FibLib:${project.fiblib_version}"
+
+    // REI
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:5.11.202"
+    modRuntime "me.shedaniel:RoughlyEnoughItems:5.11.202"
 }
 
 processResources {

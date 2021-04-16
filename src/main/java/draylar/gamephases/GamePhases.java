@@ -10,6 +10,7 @@ import draylar.gamephases.command.PhaseCommand;
 import draylar.gamephases.kube.GamePhasesEventJS;
 import me.shedaniel.architectury.event.events.PlayerEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
+import me.shedaniel.rei.api.EntryRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
@@ -45,8 +46,6 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
         // Use KubeJS events for item handling
         registerItemHandlers();
-
-
     }
 
     public void registerItemHandlers() {
