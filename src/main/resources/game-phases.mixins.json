@@ -7,6 +7,7 @@
     "AdvancementRewardsMixin",
     "PlayerEntityMixin",
     "block.AbstractBlockMixin",
+    "block.BlockMixin",
     "dimension.EntityDimensionTransferMixin",
     "dimension.FabricDimensionsMixin"
   ],
