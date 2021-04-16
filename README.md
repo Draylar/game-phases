@@ -57,7 +57,7 @@ General blacklist restrictions include:
  - Blocked out item tooltip
  - Unable to use (right-click) the item
  - Prevent item pickups
- - Cancel any recipes involving the item [NYI]
+ - Cancel any recipes involving the item
  - Drop when equipped [NYI]
  - Invisible in REI and creative inventory [NYI]
 
