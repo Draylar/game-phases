@@ -64,9 +64,10 @@ General blacklist restrictions include:
 ### Gating items behind a stage:
 ```javascript
 onEvent('gamephases.initialize', event => {
+    // Lock Iron Ingot & all entries under the mymod namespace under phase one
     event.phase('modpack:one');
         .item('minecraft:iron_ingot')
-        .item('minecraft:*');
+        .item('mymod:*');
 });
 ```
 
@@ -82,7 +83,7 @@ General dimension restrictions include:
 ### Gating dimensions behind a stage:
 ```javascript
 onEvent('gamephases.initialize', event => {
-    # Lock Nether Entry behind 'modpack:one'
+    // Lock Nether Entry behind 'modpack:one'
     event.phase('modpack:one')
         .dimension('minecraft:the_nether');
 });
