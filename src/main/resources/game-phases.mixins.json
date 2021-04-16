@@ -4,6 +4,7 @@
   "package": "draylar.gamephases.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AdvancementRewardsMixin",
     "dimension.EntityDimensionTransferMixin",
     "dimension.FabricDimensionsMixin"
   ],

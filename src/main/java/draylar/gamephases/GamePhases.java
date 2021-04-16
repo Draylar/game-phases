@@ -45,6 +45,8 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
         // Use KubeJS events for item handling
         registerItemHandlers();
+
+
     }
 
     public void registerItemHandlers() {
