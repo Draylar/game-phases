@@ -64,22 +64,41 @@ public class Phase {
         return this;
     }
 
+    /**
+     * @param item {@link Item} to check for phase restrictions
+     * @return {@code true} if this phase restricts the given {@link Item}, otherwise {@code true}
+     */
     public boolean disallows(Item item) {
         return blacklistedItems.contains(item);
     }
 
+    /**
+     * @param world {@link ServerWorld} to check for phase restrictions
+     * @return {@code true} if this phase restricts the given {@link ServerWorld}/dimension, otherwise {@code true}
+     */
     public boolean disallows(ServerWorld world) {
         return blacklistedDimensions.contains(world.getRegistryKey().getValue().toString());
     }
 
+    /**
+     * @param player player to check for phase status
+     * @return {@code true} if the given {@link PlayerEntity} has passed/unlocked this phase, otherwise {@code false}
+     */
     public boolean hasUnlocked(PlayerEntity player) {
         return GamePhases.getPhaseData(player).has(this.id);
     }
 
+    /**
+     * @return a {@link String} which uniquely identifies this game phase
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * @see Phase#fromTag(CompoundTag)
+     * @return a {@link CompoundTag} with the data of this {@link Phase} serialized inside it.
+     */
     public CompoundTag toTag() {
         CompoundTag tag = new CompoundTag();
         tag.putString("ID", id);
