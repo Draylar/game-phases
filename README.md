@@ -63,6 +63,10 @@ Grant the phase to the user when they obtain stone:
 }
 ```
 
+Grant a phase through the /phase command:
+
+`/phase grant Draylar one`
+
 ---
 
 ## Item Restrictions
