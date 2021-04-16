@@ -30,7 +30,7 @@ Game Phases has built-in compatibility with the following mods:
 Define a phase:
 ```javascript
 onEvent('gamephases.initialize', event => {
-    event.phase('modpack:one');
+    event.phase('one');
 });
 ```
 
