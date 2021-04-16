@@ -48,7 +48,7 @@ public class Phase {
 
         // fib the block
         BlockFib fib = BlockFib.builder(block, replacement)
-                .withCondition(player -> !GamePhases.getPhaseData(player).has(this))
+                .withCondition(player -> !GamePhases.getPhaseData(player).has(this.id))
                 .build();
 
         Identifier phaseID = new Identifier(getId());
@@ -74,7 +74,7 @@ public class Phase {
     }
 
     public boolean hasUnlocked(PlayerEntity player) {
-        return GamePhases.getPhaseData(player).has(this);
+        return GamePhases.getPhaseData(player).has(this.id);
     }
 
     public String getId() {

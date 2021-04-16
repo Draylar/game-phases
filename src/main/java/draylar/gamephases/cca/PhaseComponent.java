@@ -17,7 +17,7 @@ import java.util.Map;
 public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
 
     private final String PHASES_KEY = "Phases";
-    private final Map<Phase, Boolean> phases = new HashMap<>();
+    private final Map<String, Boolean> phases = new HashMap<>();
     private final PlayerEntity player;
 
     public PhaseComponent(PlayerEntity player) {
@@ -28,12 +28,8 @@ public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
      * @param phase phase to check for unlock status
      * @return {@code true} if the {@link net.minecraft.entity.player.PlayerEntity} this component is associated with has unlocked the given phase.
      */
-    public boolean has(Phase phase) {
-        return phases.getOrDefault(phase, false);
-    }
-
     public boolean has(String phase) {
-        return phases.getOrDefault(GamePhasesEventJS.getPhases().get(phase), false);
+        return phases.getOrDefault(phase, false);
     }
 
     /**
@@ -42,7 +38,7 @@ public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
      * @param status new status of the phase
      */
     public void set(Identifier phase, boolean status) {
-        phases.put(GamePhasesEventJS.getPhases().get(phase.toString()), status);
+        phases.put(phase.toString(), status);
         GamePhases.PHASES.sync(player);
     }
 
@@ -53,7 +49,7 @@ public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
 
         list.forEach(element -> {
             CompoundTag c = (CompoundTag) element;
-            phases.put(GamePhasesEventJS.getPhases().get(c.getString("Phase")), c.getBoolean("Unlocked"));
+            phases.put(c.getString("Phase"), c.getBoolean("Unlocked"));
         });
     }
 
@@ -63,7 +59,7 @@ public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
 
         phases.forEach((phase, unlocked) -> {
             CompoundTag c = new CompoundTag();
-            c.putString("Phase", phase.getId());
+            c.putString("Phase", phase);
             c.putBoolean("Unlocked", unlocked);
             list.add(c);
         });

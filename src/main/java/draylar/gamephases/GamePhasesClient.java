@@ -26,7 +26,7 @@ public class GamePhasesClient implements ClientModInitializer {
 
             // read phases and add to local collection
             CompoundTag compoundTag = buf.readCompoundTag();
-            ListTag phases = compoundTag.getList("Phases", NbtType.LIST);
+            ListTag phases = compoundTag.getList("Phases", NbtType.COMPOUND);
             phases.forEach(phaseTag -> {
                 CompoundTag inner = (CompoundTag) phaseTag;
                 String id = inner.getString("ID");
