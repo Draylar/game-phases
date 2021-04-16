@@ -1,7 +1,6 @@
 package draylar.gamephases.api;
 
 import draylar.gamephases.GamePhases;
-import draylar.gamephases.kube.GamePhasesEventJS;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.server.world.ServerWorld;
@@ -39,5 +38,9 @@ public class Phase {
 
     public boolean hasUnlocked(PlayerEntity player) {
         return GamePhases.getPhaseData(player).has(this);
+    }
+
+    public String getId() {
+        return id;
     }
 }
