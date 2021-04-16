@@ -18,6 +18,10 @@ repositories {
 
     maven { url "https://maven.shedaniel.me" }
     maven { url "https://www.cursemaven.com" }
+
+    maven {
+        url "https://hephaestus.dev/release"
+    }
 }
 
 dependencies {
@@ -42,6 +46,9 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:2.8.0"
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:2.8.0"
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:2.8.0"
+
+    modImplementation "dev.hephaestus:FibLib:${project.fiblib_version}"
+    include "dev.hephaestus:FibLib:${project.fiblib_version}"
 }
 
 processResources {
