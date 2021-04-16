@@ -37,7 +37,7 @@ public class SpawnerHelperMixin {
         boolean allowed = GamePhasesEventJS.getPhases()
                 .values()
                 .stream()
-                .filter(phase -> phase.disallows(type))
+                .filter(phase -> phase.restricts(type))
                 .allMatch(phase -> {
                     return cachedWorld.getPlayers(player -> Math.sqrt(player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())) < phase.getRadius(type))
                             .stream()

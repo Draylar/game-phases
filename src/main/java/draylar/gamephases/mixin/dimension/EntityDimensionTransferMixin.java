@@ -19,7 +19,7 @@ public class EntityDimensionTransferMixin {
             at = @At(value = "HEAD"),
             cancellable = true)
     private void beforeTeleport(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {
-        boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(destination)).allMatch(phase -> phase.hasUnlocked(MinecraftClient.getInstance().player));
+        boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(destination)).allMatch(phase -> phase.hasUnlocked(MinecraftClient.getInstance().player));
         if(!allowed) {
             cir.cancel();
         }

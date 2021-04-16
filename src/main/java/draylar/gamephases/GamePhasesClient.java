@@ -45,7 +45,7 @@ public class GamePhasesClient implements ClientModInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean b = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(MinecraftClient.getInstance().player));
+            boolean b = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(MinecraftClient.getInstance().player));
             if (!b) {
                 list.clear();
                 list.add(new LiteralText("Locked").formatted(Formatting.RED));

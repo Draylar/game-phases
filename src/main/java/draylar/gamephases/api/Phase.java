@@ -81,24 +81,40 @@ public class Phase {
 
     /**
      * @param item {@link Item} to check for phase restrictions
-     * @return {@code true} if this phase restricts the given {@link Item}, otherwise {@code true}
+     * @return {@code true} if this phase restricts the given {@link Item}, otherwise {@code false}
      */
-    public boolean disallows(Item item) {
+    public boolean restricts(Item item) {
         return blacklistedItems.contains(item);
     }
 
     /**
      * @param world {@link ServerWorld} to check for phase restrictions
-     * @return {@code true} if this phase restricts the given {@link ServerWorld}/dimension, otherwise {@code true}
+     * @return {@code true} if this phase restricts the given {@link ServerWorld}/dimension, otherwise {@code false}
      */
-    public boolean disallows(ServerWorld world) {
+    public boolean restricts(ServerWorld world) {
         return blacklistedDimensions.contains(world.getRegistryKey().getValue().toString());
     }
 
-    public boolean disallows(EntityType<?> type) {
+    /**
+     * @param type type to check for spawn restrictions
+     * @return {@code true} if this phase restricts spawning of the given {@link EntityType}, otherwise {@code false}
+     */
+    public boolean restricts(EntityType<?> type) {
         return blacklistedEntities.stream().anyMatch(pair -> pair.getLeft().equals(type));
     }
 
+    /**
+     * Returns the minimum spawn restriction distance of the given {@link EntityType} in this {@link Phase}, or -1 if the entity is not restricted.
+     *
+     * <p>
+     * Example:
+     *   <ul>minecraft:creeper, 128
+     *   <ul>minecraft:creeper, 70
+     *   <ul>Result: 70
+     *
+     * @param type type restrictions to check for minimum radius
+     * @return  the minimum spawn restriction of the given type, or -1 if it is not restricted
+     */
     public int getRadius(EntityType<?> type) {
         return blacklistedEntities.stream()
                 .filter(pair -> pair.getLeft().equals(type))

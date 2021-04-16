@@ -56,7 +56,7 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
             return !allowed ? ActionResult.FAIL : ActionResult.PASS;
         });
 
@@ -67,7 +67,7 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
             return !allowed ? TypedActionResult.fail(stackInHand) : TypedActionResult.pass(stackInHand);
         });
 
@@ -78,7 +78,7 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
             return !allowed ? ActionResult.FAIL : ActionResult.PASS;
         });
 
@@ -89,7 +89,7 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
             return !allowed ? ActionResult.FAIL : ActionResult.PASS;
         });
 
@@ -98,7 +98,7 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
             for(Hand hand : Hand.values()) {
                 ItemStack stack = player.getStackInHand(hand);
                 Item item = stack.getItem();
-                boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.disallows(item)).allMatch(phase -> phase.hasUnlocked(player));
+                boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
                 if(!allowed) {
                     player.dropStack(stack.copy());
                     stack.decrement(stack.getCount());
