@@ -6,6 +6,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import draylar.gamephases.cca.PhaseComponent;
+import draylar.gamephases.command.PhaseCommand;
 import draylar.gamephases.kube.GamePhasesEventJS;
 import me.shedaniel.architectury.event.events.PlayerEvent;
 import me.shedaniel.architectury.event.events.TickEvent;
@@ -28,6 +29,8 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
     @Override
     public void onInitialize() {
+        PhaseCommand.init();
+
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             new GamePhasesEventJS().post(ScriptType.SERVER, "gamephases.initialize");
         });
