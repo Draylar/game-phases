@@ -2,6 +2,8 @@ package draylar.gamephases.cca;
 
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
+import draylar.gamephases.api.Phase;
+import draylar.gamephases.kube.GamePhasesEventJS;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
@@ -12,7 +14,7 @@ import java.util.Map;
 public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
 
     private final String PHASES_KEY = "Phases";
-    private final Map<Identifier, Boolean> phases = new HashMap<>();
+    private final Map<Phase, Boolean> phases = new HashMap<>();
     private final PlayerEntity player;
 
     public PhaseComponent(PlayerEntity player) {
@@ -23,7 +25,7 @@ public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
      * @param phase phase to check for unlock status
      * @return {@code true} if the {@link net.minecraft.entity.player.PlayerEntity} this component is associated with has unlocked the given phase.
      */
-    public boolean has(Identifier phase) {
+    public boolean has(Phase phase) {
         return phases.getOrDefault(phase, false);
     }
 
@@ -33,7 +35,7 @@ public class PhaseComponent implements ComponentV3, AutoSyncedComponent {
      * @param status new status of the phase
      */
     public void set(Identifier phase, boolean status) {
-        phases.put(phase, status);
+        phases.put(GamePhasesEventJS.getPhases().get(phase.toString()), status);
     }
 
     @Override
