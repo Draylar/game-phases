@@ -5,7 +5,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.chunk.Chunk;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,15 +37,9 @@ public class SpawnerHelperMixin {
                 .values()
                 .stream()
                 .filter(phase -> phase.restricts(type))
-                .allMatch(phase -> {
-                    return cachedWorld.getPlayers(player -> Math.sqrt(player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())) < phase.getRadius(type))
-                            .stream()
-                            .anyMatch(player1 -> phase.hasUnlocked(player1));
-                });
-
-        if(!allowed) {
-            System.out.println("Blocked: " + Registry.ENTITY_TYPE.getId(type));
-        }
+                .allMatch(phase -> cachedWorld.getPlayers(player -> Math.sqrt(player.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ())) < phase.getRadius(type))
+                        .stream()
+                        .anyMatch(phase::hasUnlocked));
 
         return checker.test(type, pos, chunk) && allowed;
     }
