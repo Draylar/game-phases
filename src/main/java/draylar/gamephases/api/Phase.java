@@ -51,10 +51,9 @@ public class Phase {
                 .withCondition(player -> !GamePhases.getPhaseData(player).has(this.id))
                 .build();
 
-        Identifier phaseID = new Identifier(getId());
         Identifier inID = Registry.BLOCK.getId(block);
         Identifier outID = Registry.BLOCK.getId(replacement);
-        Identifier id = new Identifier(phaseID.getNamespace(), String.format("%s_%s_%s", phaseID.getPath(), inID.getPath(), outID.getPath()));
+        Identifier id = new Identifier(getId(), String.format("%s_%s", inID.getPath(), outID.getPath()));
         BlockFibRegistry.register(id, fib);
 
         return this;

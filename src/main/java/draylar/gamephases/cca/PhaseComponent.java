@@ -3,8 +3,6 @@ package draylar.gamephases.cca;
 import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import draylar.gamephases.GamePhases;
-import draylar.gamephases.api.Phase;
-import draylar.gamephases.kube.GamePhasesEventJS;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;

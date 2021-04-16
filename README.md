@@ -22,7 +22,7 @@ Grant the phase to the user when they obtain stone:
   "parent": "minecraft:recipes/root",
   "rewards": {
     "phase": [
-      "modpack:one"
+      "one"
     ]
   },
   "criteria": {
@@ -65,7 +65,7 @@ General blacklist restrictions include:
 ```javascript
 onEvent('gamephases.initialize', event => {
     // Lock Iron Ingot & all entries under the mymod namespace under phase one
-    event.phase('modpack:one');
+    event.phase('one');
         .item('minecraft:iron_ingot')
         .item('mymod:*');
 });
@@ -88,7 +88,7 @@ General blacklist restrictions include:
 ```javascript
 onEvent('gamephases.initialize', event => {
     // Replace stone with Diamond Ore
-    event.phase('modpack:one');
+    event.phase('one');
         .block('minecraft:diamond_ore', 'minecraft:stone');
 });
 ```
@@ -105,8 +105,8 @@ General dimension restrictions include:
 ### Gating dimensions behind a phase:
 ```javascript
 onEvent('gamephases.initialize', event => {
-    // Lock Nether Entry behind 'modpack:one'
-    event.phase('modpack:one')
+    // Lock Nether Entry behind 'one'
+    event.phase('one')
         .dimension('minecraft:the_nether');
 });
 ```
@@ -116,14 +116,14 @@ onEvent('gamephases.initialize', event => {
 ## Other KubeJS utilities
 
 Game Phases exposes several utility methods you can use with KubeJS to depend on phases.
-Here is an example script which prints an extra message to the player if they have the `phases:one` game phase:
+Here is an example script which prints an extra message to the player if they have the `one` game phase:
 
 *Note: phases are synced S2C, which allows for client-side KubeJS scripts that depend on phases.*
 ```javascript
 onEvent('player.chat', event => {
-    var hasOne = event.player.hasPhase('phases:one');
+    var hasOne = event.player.hasPhase('one');
     
-    // If the player has unlocked the 'phases:one' rank, print an extra message.
+    // If the player has unlocked the 'one' rank, print an extra message.
     if(hasOne) {
         event.player.tell('You are powerful.')
     }
