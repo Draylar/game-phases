@@ -15,7 +15,6 @@ public class EntityDimensionTransferMixin {
 
     @Inject(
             method = "moveToWorld",
-            remap = false,
             at = @At(value = "HEAD"),
             cancellable = true)
     private void beforeTeleport(ServerWorld destination, CallbackInfoReturnable<Entity> cir) {

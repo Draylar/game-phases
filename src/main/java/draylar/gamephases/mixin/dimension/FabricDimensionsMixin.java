@@ -17,6 +17,7 @@ public class FabricDimensionsMixin {
 
     @Inject(
             method = "teleport",
+            remap = false,
             at = @At(value = "INVOKE", target = "Lnet/fabricmc/fabric/impl/dimension/FabricDimensionInternals;changeDimension(Lnet/minecraft/entity/Entity;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/TeleportTarget;)Lnet/minecraft/entity/Entity;"),
             cancellable = true)
     private static void beforeTeleport(Entity teleported, ServerWorld destination, TeleportTarget target, CallbackInfoReturnable<@Nullable Entity> cir) {
