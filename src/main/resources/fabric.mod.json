@@ -17,9 +17,6 @@
     ],
     "main": [
       "draylar.gamephases.GamePhases"
-    ],
-    "cardinal-components-entity": [
-      "draylar.gamephases.GamePhases"
     ]
   },
   "mixins": [

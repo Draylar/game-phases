@@ -5,8 +5,8 @@ import draylar.gamephases.GamePhases;
 import draylar.gamephases.api.Phase;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 
@@ -35,21 +35,21 @@ public class GamePhasesEventJS extends EventJS {
         PacketByteBuf packet = PacketByteBufs.create();
 
         // Save phases to packet
-        CompoundTag tag = new CompoundTag();
-        ListTag l = new ListTag();
+        NbtCompound tag = new NbtCompound();
+        NbtList l = new NbtList();
         PHASES.forEach((id, phase) -> {
-            CompoundTag inner = new CompoundTag();
+            NbtCompound inner = new NbtCompound();
             inner.putString("ID", id);
             inner.put("PhaseData", phase.toTag());
             l.add(inner);
         });
 
         tag.put("Phases", l);
-        packet.writeCompoundTag(tag);
+        packet.writeNbt(tag);
 
         // Send packet to all players
         server.getPlayerManager().getPlayerList().forEach(player -> {
-            player.networkHandler.sendPacket(ServerPlayNetworking.createS2CPacket(GamePhases.PHASE_SYNC_ID,  packet));
+            player.networkHandler.sendPacket(ServerPlayNetworking.createS2CPacket(GamePhases.ALL_PHASE_SYNC_ID,  packet));
         });
     }
 }

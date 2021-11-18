@@ -5,15 +5,15 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AdvancementRewardsMixin",
-    "IngredientAccessor",
     "block.AbstractBlockMixin",
     "block.BlockMixin",
+    "data.PlayerEntityDataMixin",
     "dimension.EntityDimensionTransferMixin",
     "dimension.FabricDimensionsMixin",
     "entity.EntityJSMixin",
     "entity.SpawnerHelperMixin",
     "item.CraftingScreenHandlerMixin",
-    "item.PlayerInventoryMixin"
+    "item.ScreenHandlerMixin"
   ],
   "client": [
   ],

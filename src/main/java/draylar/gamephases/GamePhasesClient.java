@@ -1,8 +1,9 @@
 package draylar.gamephases;
 
+import dev.architectury.event.events.client.ClientTooltipEvent;
 import draylar.gamephases.api.Phase;
 import draylar.gamephases.kube.GamePhasesEventJS;
-import me.shedaniel.architectury.event.events.TooltipEvent;
+import draylar.gamephases.network.ClientNetworking;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,8 +11,8 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 
@@ -20,27 +21,13 @@ public class GamePhasesClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientPlayNetworking.registerGlobalReceiver(GamePhases.PHASE_SYNC_ID, (client, handler, buf, responseSender) -> {
-            // clear existing phases
-            GamePhasesEventJS.getPhases().clear();
-
-            // read phases and add to local collection
-            CompoundTag compoundTag = buf.readCompoundTag();
-            ListTag phases = compoundTag.getList("Phases", NbtType.COMPOUND);
-            phases.forEach(phaseTag -> {
-                CompoundTag inner = (CompoundTag) phaseTag;
-                String id = inner.getString("ID");
-                Phase phase = Phase.fromTag(inner.getCompound("PhaseData"));
-                GamePhasesEventJS.getPhases().put(id, phase);
-            });
-        });
-
-        registerItemHandlers();
+        ClientNetworking.initialize();
+        registerItemTooltipHandler();
     }
 
-    private void registerItemHandlers() {
+    private void registerItemTooltipHandler() {
         // Render a blank tooltip when the user does not have permission to use the item.
-        TooltipEvent.ITEM.register((stack, list, context) -> {
+        ClientTooltipEvent.ITEM.register((stack, list, context) -> {
             Item item = stack.getItem();
 
             // Check all registered Phases.

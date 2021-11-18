@@ -1,33 +1,32 @@
 package draylar.gamephases;
 
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.PlayerEvent;
+import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.kubejs.script.ScriptType;
-import dev.onyxstudios.cca.api.v3.component.ComponentKey;
-import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
-import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
-import draylar.gamephases.cca.PhaseComponent;
 import draylar.gamephases.command.PhaseCommand;
+import draylar.gamephases.impl.PlayerDataProvider;
 import draylar.gamephases.kube.GamePhasesEventJS;
-import me.shedaniel.architectury.event.events.PlayerEvent;
-import me.shedaniel.architectury.event.events.TickEvent;
-import me.shedaniel.rei.api.EntryRegistry;
+import draylar.gamephases.network.ServerNetworking;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerLoginConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 
-public class GamePhases implements ModInitializer, EntityComponentInitializer {
+public class GamePhases implements ModInitializer {
 
-    public static final Identifier PHASE_SYNC_ID = id("phase_sync");
-    public static final ComponentKey<PhaseComponent> PHASES = ComponentRegistryV3.INSTANCE.getOrCreate(id("phases"), PhaseComponent.class);
+    public static final Identifier ALL_PHASE_SYNC_ID = id("all_phase_sync");
 
     @Override
     public void onInitialize() {
@@ -56,7 +55,7 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
             boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
-            return !allowed ? ActionResult.FAIL : ActionResult.PASS;
+            return !allowed ? EventResult.interruptFalse() : EventResult.pass();
         });
 
         // Block Item use
@@ -94,7 +93,7 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
 
         // When a player ticks, check their held item. If the held item is blocked, drop it.
         TickEvent.PLAYER_PRE.register(player -> {
-            for(Hand hand : Hand.values()) {
+            for (Hand hand : Hand.values()) {
                 ItemStack stack = player.getStackInHand(hand);
                 Item item = stack.getItem();
                 boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
@@ -104,18 +103,18 @@ public class GamePhases implements ModInitializer, EntityComponentInitializer {
                 }
             }
         });
+
+        // When a player first joins, sync server-side phase data to the client.
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            GamePhases.getPhaseData(handler.player).sync();
+        });
     }
 
     public static Identifier id(String name) {
         return new Identifier("gamephases", name);
     }
 
-    public static PhaseComponent getPhaseData(PlayerEntity player) {
-        return PHASES.get(player);
-    }
-
-    @Override
-    public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerFor(PlayerEntity.class, PHASES, PhaseComponent::new);
+    public static PlayerDataProvider getPhaseData(PlayerEntity player) {
+        return ((PlayerDataProvider) player);
     }
 }

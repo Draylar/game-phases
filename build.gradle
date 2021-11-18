@@ -1,10 +1,10 @@
 plugins {
-    id 'fabric-loom' version '0.7-SNAPSHOT'
+    id 'fabric-loom' version '0.9-SNAPSHOT'
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version + "-" + project.minecraft_version
@@ -18,10 +18,7 @@ repositories {
 
     maven { url "https://maven.shedaniel.me" }
     maven { url "https://www.cursemaven.com" }
-
-    maven {
-        url "https://hephaestus.dev/release"
-    }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -37,32 +34,23 @@ dependencies {
     // You may need to force-disable transitiveness on them.
 
     // KubeJS for compatibility testing
-    modImplementation 'curse.maven:kubejs-395864:3269809'
-    modImplementation 'curse.maven:rhino-416294:3187177'
-    modImplementation 'me.shedaniel:architectury-fabric:1.7.117'
-
-    // CCA
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:2.8.0"
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:2.8.0"
+    modImplementation 'curse.maven:kubejs-395864:3487694'
+    modImplementation 'curse.maven:rhino-3525704:3525703'
+    modImplementation 'curse.maven:architectury-fabric-419697:3500017'
 
     // FibLib for block hiding
-    modImplementation "dev.hephaestus:FibLib:${project.fiblib_version}"
+    modImplementation "com.github.Draylar:FibLib:${project.fiblib_version}"
 
     // REI
-    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:5.11.202"
-    modRuntime "me.shedaniel:RoughlyEnoughItems:5.11.202"
+    modImplementation "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
+    modImplementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
 }
 
 processResources {
     inputs.property "version", project.version
 
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
+    filesMatching('fabric.mod.json') {
         expand "version": project.version
-    }
-
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
     }
 }
 

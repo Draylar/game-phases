@@ -2,7 +2,6 @@ package draylar.gamephases.mixin.item;
 
 import draylar.gamephases.api.Phase;
 import draylar.gamephases.kube.GamePhasesEventJS;
-import draylar.gamephases.mixin.IngredientAccessor;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
@@ -30,7 +29,7 @@ public class CraftingScreenHandlerMixin {
         }
 
         ItemStack output = recipe.getOutput();
-        DefaultedList<Ingredient> ingredients = recipe.getPreviewInputs();
+        DefaultedList<Ingredient> ingredients = recipe.getIngredients();
 
         // If the output or ingredient contains a recipe the player has not unlocked, prevent the craft.
         for (Map.Entry<String, Phase> entry : GamePhasesEventJS.getPhases().entrySet()) {
@@ -44,7 +43,7 @@ public class CraftingScreenHandlerMixin {
             }
 
             // Check if any ingredient is disallowed
-            boolean disallowed = ingredients.stream().map(ingredient -> Arrays.asList(((IngredientAccessor) (Object) ingredient).getMatchingStacks())).anyMatch(itemStacks -> {
+            boolean disallowed = ingredients.stream().map(ingredient -> Arrays.asList(ingredient.getMatchingStacks())).anyMatch(itemStacks -> {
                 for (ItemStack stack : itemStacks) {
                     if(phase.restricts(stack.getItem())) {
                         return true;

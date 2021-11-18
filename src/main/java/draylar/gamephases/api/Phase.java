@@ -8,9 +8,9 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
@@ -140,37 +140,37 @@ public class Phase {
     }
 
     /**
-     * @see Phase#fromTag(CompoundTag)
-     * @return a {@link CompoundTag} with the data of this {@link Phase} serialized inside it.
+     * @see Phase#fromTag(NbtCompound)
+     * @return a {@link NbtCompound} with the data of this {@link Phase} serialized inside it.
      */
-    public CompoundTag toTag() {
-        CompoundTag tag = new CompoundTag();
+    public NbtCompound toTag() {
+        NbtCompound tag = new NbtCompound();
         tag.putString("ID", id);
 
         // write blacklisted items
-        ListTag itemList = new ListTag();
+        NbtList itemList = new NbtList();
         blacklistedItems.forEach(item -> {
             Identifier id = Registry.ITEM.getId(item);
-            itemList.add(StringTag.of(id.toString()));
+            itemList.add(NbtString.of(id.toString()));
         });
 
         // write blacklisted blocks
-        ListTag blockList = new ListTag();
+        NbtList blockList = new NbtList();
         blacklistedBlocks.forEach(block -> {
             Identifier id = Registry.BLOCK.getId(block);
-            itemList.add(StringTag.of(id.toString()));
+            itemList.add(NbtString.of(id.toString()));
         });
 
         // write blacklisted dimensions
-        ListTag dimensionList = new ListTag();
+        NbtList dimensionList = new NbtList();
         blacklistedDimensions.forEach(dimension -> {
-            itemList.add(StringTag.of(id));
+            itemList.add(NbtString.of(id));
         });
 
         // write blacklisted entities
-        ListTag entityList = new ListTag();
+        NbtList entityList = new NbtList();
         blacklistedEntities.forEach(entity -> {
-            CompoundTag compound = new CompoundTag();
+            NbtCompound compound = new NbtCompound();
             compound.putString("ID", Registry.ENTITY_TYPE.getId(entity.getLeft()).toString());
             compound.putInt("Range", entity.getRight());
             entityList.add(compound);
@@ -183,12 +183,12 @@ public class Phase {
         return tag;
     }
 
-    public static Phase fromTag(CompoundTag tag) {
+    public static Phase fromTag(NbtCompound tag) {
         String id = tag.getString("ID");
-        ListTag items = tag.getList("Items", NbtType.COMPOUND);
-        ListTag blocks = tag.getList("Blocks", NbtType.COMPOUND);
-        ListTag dimensions = tag.getList("Dimensions", NbtType.COMPOUND);
-        ListTag entities = tag.getList("Entities", NbtType.COMPOUND);
+        NbtList items = tag.getList("Items", NbtType.COMPOUND);
+        NbtList blocks = tag.getList("Blocks", NbtType.COMPOUND);
+        NbtList dimensions = tag.getList("Dimensions", NbtType.COMPOUND);
+        NbtList entities = tag.getList("Entities", NbtType.COMPOUND);
 
         // read items
         List<Item> readItems = new ArrayList<>();
@@ -205,7 +205,7 @@ public class Phase {
         // read entities
         List<Pair<EntityType<?>, Integer>> readEntities = new ArrayList<>();
         dimensions.forEach(element -> {
-            CompoundTag compound = (CompoundTag) element;
+            NbtCompound compound = (NbtCompound) element;
             readEntities.add(new Pair<>(Registry.ENTITY_TYPE.get(new Identifier(compound.getString("ID"))), compound.getInt("Range")));
         });
 
