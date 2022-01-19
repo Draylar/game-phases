@@ -57,7 +57,10 @@ public class Phase {
                 .modifiesDrops()
                 .build();
 
-        BlockFibRegistry.register(fib);
+        Identifier inID = Registry.BLOCK.getId(block);
+        Identifier outID = Registry.BLOCK.getId(replacement);
+        Identifier id = new Identifier(getId(), String.format("%s_%s", inID.getPath(), outID.getPath()));
+        BlockFibRegistry.register(id, fib);
         return this;
     }
 

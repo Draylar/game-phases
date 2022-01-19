@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class REICompat {
@@ -21,7 +22,13 @@ public class REICompat {
 
     public static void hideBlockedItems() {
         // Re-add hidden entries for reload system
-        EntryRegistry.getInstance().addEntries(hidden);
+        List<EntryStack<?>> currentEntries = EntryRegistry.getInstance().getEntryStacks().toList();
+        hidden.forEach(entry -> {
+            if(!currentEntries.contains(entry)) {
+                EntryRegistry.getInstance().addEntry(entry);
+            }
+        });
+
         hidden.clear();
 
         // Iterate over REI entries, removing & storing entries that the player can't see.

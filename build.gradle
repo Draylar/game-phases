@@ -11,6 +11,8 @@ version = project.mod_version + "-" + project.minecraft_version
 group = project.maven_group
 
 repositories {
+    mavenLocal()
+
     maven {
         name = 'Ladysnake Mods'
         url = 'https://ladysnake.jfrog.io/artifactory/mods'
@@ -18,7 +20,6 @@ repositories {
 
     maven { url "https://maven.shedaniel.me" }
     maven { url "https://www.cursemaven.com" }
-    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -36,7 +37,7 @@ dependencies {
     modImplementation 'curse.maven:architectury-fabric-419697:3587094'
 
     // FibLib for block hiding
-    modImplementation "com.github.Haven-King:FibLib:${project.fiblib_version}"
+    modImplementation "dev.hephaestus:FibLib:1.2.1+1.17"
 
     // REI
     modImplementation ("me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}") {
