@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.9-SNAPSHOT'
+    id 'fabric-loom' version '0.10-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -30,20 +30,21 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
-    // You may need to force-disable transitiveness on them.
-
     // KubeJS for compatibility testing
     modImplementation 'curse.maven:kubejs-395864:3487694'
-    modImplementation 'curse.maven:rhino-3525704:3525703'
-    modImplementation 'curse.maven:architectury-fabric-419697:3500017'
+    modImplementation 'curse.maven:rhino-3525704:3493217'
+    modImplementation 'curse.maven:architectury-fabric-419697:3587094'
 
     // FibLib for block hiding
-    modImplementation "com.github.Draylar:FibLib:${project.fiblib_version}"
+    modImplementation "com.github.Haven-King:FibLib:${project.fiblib_version}"
 
     // REI
-    modImplementation "me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}"
-    modImplementation "me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}"
+    modImplementation ("me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}") {
+        exclude group: 'dev.architectury'
+    }
+    modImplementation ("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}") {
+        exclude group: 'dev.architectury'
+    }
 }
 
 processResources {

@@ -54,13 +54,10 @@ public class Phase {
         // fib the block
         BlockFib fib = BlockFib.builder(block, replacement)
                 .withCondition(player -> !GamePhases.getPhaseData(player).has(this.id))
+                .modifiesDrops()
                 .build();
 
-        Identifier inID = Registry.BLOCK.getId(block);
-        Identifier outID = Registry.BLOCK.getId(replacement);
-        Identifier id = new Identifier(getId(), String.format("%s_%s", inID.getPath(), outID.getPath()));
-        BlockFibRegistry.register(id, fib);
-
+        BlockFibRegistry.register(fib);
         return this;
     }
 
