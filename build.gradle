@@ -3,8 +3,8 @@ plugins {
     id 'maven-publish'
 }
 
-sourceCompatibility = JavaVersion.VERSION_16
-targetCompatibility = JavaVersion.VERSION_16
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version + "-" + project.minecraft_version
@@ -32,12 +32,12 @@ dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
     // KubeJS for compatibility testing
-    modImplementation 'curse.maven:kubejs-395864:3487694'
+    modImplementation 'curse.maven:kubejs-395864:3596522'
     modImplementation 'curse.maven:rhino-3525704:3493217'
-    modImplementation 'curse.maven:architectury-fabric-419697:3587094'
+    modImplementation 'curse.maven:architectury-fabric-419697:3587337'
 
     // FibLib for block hiding
-    modImplementation "dev.hephaestus:FibLib:1.2.1+1.17"
+    modImplementation "dev.hephaestus:FibLib:1.3.0+1.18.1"
 
     // REI
     modImplementation ("me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}") {
