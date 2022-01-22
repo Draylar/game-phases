@@ -33,7 +33,7 @@ dependencies {
 
     // KubeJS for compatibility testing
     modImplementation 'curse.maven:kubejs-395864:3596522'
-    modImplementation 'curse.maven:rhino-3525704:3493217'
+    modImplementation 'curse.maven:rhino-3525704:3604722'
     modImplementation 'curse.maven:architectury-fabric-419697:3587337'
 
     // FibLib for block hiding

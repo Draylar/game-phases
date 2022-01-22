@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Environment(EnvType.CLIENT)
 public class REICompat {

@@ -1,6 +1,6 @@
 package draylar.gamephases.mixin.entity;
 
-import dev.latvian.kubejs.entity.EntityJS;
+import dev.latvian.mods.kubejs.entity.EntityJS;
 import draylar.gamephases.GamePhases;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;

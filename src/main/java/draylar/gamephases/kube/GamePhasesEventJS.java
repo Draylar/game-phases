@@ -1,6 +1,6 @@
 package draylar.gamephases.kube;
 
-import dev.latvian.kubejs.event.EventJS;
+import dev.latvian.mods.kubejs.event.EventJS;
 import draylar.gamephases.GamePhases;
 import draylar.gamephases.api.Phase;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
