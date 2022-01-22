@@ -28,6 +28,8 @@ public class CraftingScreenHandlerMixin {
             return false;
         }
 
+        // TODO: NOW HANDLED BY PHASE
+
         ItemStack output = recipe.getOutput();
         DefaultedList<Ingredient> ingredients = recipe.getIngredients();
 

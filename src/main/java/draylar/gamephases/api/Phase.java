@@ -8,9 +8,13 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.recipe.Ingredient;
+import net.minecraft.recipe.RecipeManager;
+import net.minecraft.recipe.RecipeType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
@@ -18,26 +22,30 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Phase {
 
     private final String id;
+    @Nullable private final RecipeManager recipeManager;
 
     // Blacklists on registry entries
-    private final List<Item> blacklistedItems;
-    private final List<Block> blacklistedBlocks;
-    private final List<String> blacklistedDimensions;
-    private final List<Pair<EntityType<?>, Integer>> blacklistedEntities;
+    private final Set<Item> blacklistedItems;
+    private final Set<Block> blacklistedBlocks;
+    private final Set<String> blacklistedDimensions;
+    private final Set<Pair<EntityType<?>, Integer>> blacklistedEntities;
 
     // Blacklists on tags
-    private final List<Tag.Identified<Item>> blacklistedItemTags;
-    private final List<Tag.Identified<Block>> blacklistedBlockTags;
+    private final Set<Tag.Identified<Item>> blacklistedItemTags;
+    private final Set<Tag.Identified<Block>> blacklistedBlockTags;
 
-    private Phase(String id, List<Item> blacklistedItems, List<Block> blacklistedBlocks, List<String> blacklistedDimensions, List<Pair<EntityType<?>, Integer>> blacklistedEntities, List<Tag.Identified<Item>> blacklistedItemTags, List<Tag.Identified<Block>> blacklistedBlockTags) {
+    private Phase(String id, @Nullable RecipeManager recipeManager, Set<Item> blacklistedItems, Set<Block> blacklistedBlocks, Set<String> blacklistedDimensions, Set<Pair<EntityType<?>, Integer>> blacklistedEntities, Set<Tag.Identified<Item>> blacklistedItemTags, Set<Tag.Identified<Block>> blacklistedBlockTags) {
         this.id = id;
+        this.recipeManager = recipeManager;
+
         this.blacklistedItems = blacklistedItems;
         this.blacklistedBlocks = blacklistedBlocks;
         this.blacklistedDimensions = blacklistedDimensions;
@@ -46,24 +54,54 @@ public class Phase {
         this.blacklistedBlockTags = blacklistedBlockTags;
     }
 
-    public Phase(String id) {
+    public Phase(String id, @Nullable RecipeManager recipeManager) {
         this.id = id;
-        this.blacklistedItems = new ArrayList<>();
-        this.blacklistedBlocks = new ArrayList<>();
-        this.blacklistedDimensions = new ArrayList<>();
-        this.blacklistedEntities = new ArrayList<>();
-        this.blacklistedItemTags = new ArrayList<>();
-        this.blacklistedBlockTags = new ArrayList<>();
+        this.recipeManager = recipeManager;
+
+        this.blacklistedItems = new HashSet<>();
+        this.blacklistedBlocks = new HashSet<>();
+        this.blacklistedDimensions = new HashSet<>();
+        this.blacklistedEntities = new HashSet<>();
+        this.blacklistedItemTags = new HashSet<>();
+        this.blacklistedBlockTags = new HashSet<>();
     }
 
     public Phase item(Item item) {
+        return item(item, true);
+    }
+
+    public Phase item(Item item, boolean restrictRecipes) {
         blacklistedItems.add(item);
+
+        // Search through all crafting recipes.
+        // For each recipe that uses the provided item as a recipe ingredient, disable the result.
+        // TODO: nested crafting checks (eg. Iron Ingot -> Iron Pickaxe -> Diamond Pickaxe)?
+        if(restrictRecipes && recipeManager != null) {
+            recipeManager.listAllOfType(RecipeType.CRAFTING).forEach(craftingRecipe -> {
+                craftingRecipe.getIngredients().stream().map(Ingredient::getMatchingStacks).forEach(ingredients -> {
+                    for (ItemStack stack : ingredients) {
+                        if(stack.getItem().equals(item)) {
+                            blacklistedItems.add(craftingRecipe.getOutput().getItem());
+                        }
+                    }
+                });
+            });
+        }
+
         return this;
     }
 
     public Phase itemTag(String tagId) {
+        return itemTag(tagId, true);
+    }
+
+    public Phase itemTag(String tagId, boolean restrictRecipes) {
         Tag<Item> tag = ItemTags.getTagGroup().getTag(new Identifier(tagId));
         if(tag instanceof Tag.Identified<Item> identified) {
+            identified.values().forEach(value -> {
+                item(value, restrictRecipes);
+            });
+
             blacklistedItemTags.add(identified);
         } else {
             GamePhases.LOGGER.warn(String.format("Item tag '%s' was referenced in phase '%s', but the tag is not present!", tagId, id));
@@ -120,10 +158,6 @@ public class Phase {
      * @return {@code true} if this phase restricts the given {@link Item}, otherwise {@code false}
      */
     public boolean restricts(Item item) {
-        if(blacklistedItemTags.stream().anyMatch(tag -> tag.contains(item))) {
-            return true;
-        }
-
         return blacklistedItems.contains(item);
     }
 
@@ -148,12 +182,12 @@ public class Phase {
      *
      * <p>
      * Example:
-     *   <ul>minecraft:creeper, 128
-     *   <ul>minecraft:creeper, 70
-     *   <ul>Result: 70
+     * <ul>minecraft:creeper, 128
+     * <ul>minecraft:creeper, 70
+     * <ul>Result: 70
      *
      * @param type type restrictions to check for minimum radius
-     * @return  the minimum spawn restriction of the given type, or -1 if it is not restricted
+     * @return the minimum spawn restriction of the given type, or -1 if it is not restricted
      */
     public int getRadius(EntityType<?> type) {
         return blacklistedEntities.stream()
@@ -180,8 +214,8 @@ public class Phase {
     }
 
     /**
-     * @see Phase#fromTag(NbtCompound)
      * @return a {@link NbtCompound} with the data of this {@link Phase} serialized inside it.
+     * @see Phase#fromTag(NbtCompound)
      */
     public NbtCompound toTag() {
         NbtCompound tag = new NbtCompound();
@@ -243,26 +277,26 @@ public class Phase {
         NbtList blockTags = tag.getList("BlockTags", NbtType.COMPOUND);
 
         // read items
-        List<Item> readItems = new ArrayList<>();
+        Set<Item> readItems = new HashSet<>();
         items.forEach(element -> readItems.add(Registry.ITEM.get(new Identifier(element.asString()))));
 
         // read blocks
-        List<Block> readBlocks = new ArrayList<>();
+        Set<Block> readBlocks = new HashSet<>();
         blocks.forEach(element -> readBlocks.add(Registry.BLOCK.get(new Identifier(element.asString()))));
 
         // read dimensions
-        List<String> readDimensions = new ArrayList<>();
+        Set<String> readDimensions = new HashSet<>();
         dimensions.forEach(element -> readDimensions.add(element.asString()));
 
         // read entities
-        List<Pair<EntityType<?>, Integer>> readEntities = new ArrayList<>();
+        Set<Pair<EntityType<?>, Integer>> readEntities = new HashSet<>();
         dimensions.forEach(element -> {
             NbtCompound compound = (NbtCompound) element;
             readEntities.add(new Pair<>(Registry.ENTITY_TYPE.get(new Identifier(compound.getString("ID"))), compound.getInt("Range")));
         });
 
         // Tag tags
-        List<Tag.Identified<Item>> readItemTags = new ArrayList<>();
+        Set<Tag.Identified<Item>> readItemTags = new HashSet<>();
         itemTags.forEach(element -> {
             Tag<Item> readItemTag = ItemTags.getTagGroup().getTag(new Identifier(element.asString()));
             if(readItemTag instanceof Tag.Identified<Item> identified) {
@@ -270,7 +304,7 @@ public class Phase {
             }
         });
 
-        List<Tag.Identified<Block>> readBlockTags = new ArrayList<>();
+        Set<Tag.Identified<Block>> readBlockTags = new HashSet<>();
         blockTags.forEach(element -> {
             Tag<Block> readBlockTag = BlockTags.getTagGroup().getTag(new Identifier(element.asString()));
             if(readBlockTag instanceof Tag.Identified<Block> identified) {
@@ -278,6 +312,6 @@ public class Phase {
             }
         });
 
-        return new Phase(id, readItems, readBlocks, readDimensions, readEntities, readItemTags, readBlockTags);
+        return new Phase(id, null, readItems, readBlocks, readDimensions, readEntities, readItemTags, readBlockTags);
     }
 }

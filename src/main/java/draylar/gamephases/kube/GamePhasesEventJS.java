@@ -16,13 +16,15 @@ import java.util.Map;
 public class GamePhasesEventJS extends EventJS {
 
     private static final Map<String, Phase> PHASES = new HashMap<>();
+    private final MinecraftServer server;
 
-    public GamePhasesEventJS() {
+    public GamePhasesEventJS(MinecraftServer server) {
+        this.server = server;
         PHASES.clear();
     }
 
     public Phase phase(String id) {
-        Phase phase = new Phase(id);
+        Phase phase = new Phase(id, server.getRecipeManager());
         PHASES.put(id, phase);
         return phase;
     }

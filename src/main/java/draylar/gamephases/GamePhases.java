@@ -33,13 +33,13 @@ public class GamePhases implements ModInitializer {
         PhaseCommand.init();
 
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            new GamePhasesEventJS().post(ScriptType.SERVER, "gamephases.initialize");
+            new GamePhasesEventJS(server).post(ScriptType.SERVER, "gamephases.initialize");
             GamePhasesEventJS.sync(server);
         });
 
         // When resource packs are reloaded, load Game Phase data.
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, manager, n) -> {
-            new GamePhasesEventJS().post(ScriptType.SERVER, "gamephases.initialize");
+            new GamePhasesEventJS(server).post(ScriptType.SERVER, "gamephases.initialize");
             GamePhasesEventJS.sync(server);
         });
 
