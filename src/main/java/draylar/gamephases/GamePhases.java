@@ -20,9 +20,12 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GamePhases implements ModInitializer {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger("modid");
     public static final Identifier ALL_PHASE_SYNC_ID = id("all_phase_sync");
 
     @Override

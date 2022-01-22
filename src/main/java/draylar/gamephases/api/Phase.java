@@ -12,6 +12,9 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
@@ -22,17 +25,25 @@ import java.util.List;
 public class Phase {
 
     private final String id;
+
+    // Blacklists on registry entries
     private final List<Item> blacklistedItems;
     private final List<Block> blacklistedBlocks;
     private final List<String> blacklistedDimensions;
     private final List<Pair<EntityType<?>, Integer>> blacklistedEntities;
 
-    private Phase(String id, List<Item> blacklistedItems, List<Block> blacklistedBlocks, List<String> blacklistedDimensions, List<Pair<EntityType<?>, Integer>> blacklistedEntities) {
+    // Blacklists on tags
+    private final List<Tag.Identified<Item>> blacklistedItemTags;
+    private final List<Tag.Identified<Block>> blacklistedBlockTags;
+
+    private Phase(String id, List<Item> blacklistedItems, List<Block> blacklistedBlocks, List<String> blacklistedDimensions, List<Pair<EntityType<?>, Integer>> blacklistedEntities, List<Tag.Identified<Item>> blacklistedItemTags, List<Tag.Identified<Block>> blacklistedBlockTags) {
         this.id = id;
         this.blacklistedItems = blacklistedItems;
         this.blacklistedBlocks = blacklistedBlocks;
         this.blacklistedDimensions = blacklistedDimensions;
         this.blacklistedEntities = blacklistedEntities;
+        this.blacklistedItemTags = blacklistedItemTags;
+        this.blacklistedBlockTags = blacklistedBlockTags;
     }
 
     public Phase(String id) {
@@ -41,10 +52,35 @@ public class Phase {
         this.blacklistedBlocks = new ArrayList<>();
         this.blacklistedDimensions = new ArrayList<>();
         this.blacklistedEntities = new ArrayList<>();
+        this.blacklistedItemTags = new ArrayList<>();
+        this.blacklistedBlockTags = new ArrayList<>();
     }
 
     public Phase item(Item item) {
         blacklistedItems.add(item);
+        return this;
+    }
+
+    public Phase itemTag(String tagId) {
+        Tag<Item> tag = ItemTags.getTagGroup().getTag(new Identifier(tagId));
+        if(tag instanceof Tag.Identified<Item> identified) {
+            blacklistedItemTags.add(identified);
+        } else {
+            GamePhases.LOGGER.warn(String.format("Item tag '%s' was referenced in phase '%s', but the tag is not present!", tagId, id));
+        }
+
+        return this;
+    }
+
+    public Phase blockTag(String tagId, Block replacement) {
+        Tag<Block> tag = BlockTags.getTagGroup().getTag(new Identifier(tagId));
+        if(tag instanceof Tag.Identified<Block> identified) {
+            blacklistedBlockTags.add(identified);
+            identified.values().forEach(tagEntry -> block(tagEntry, replacement));
+        } else {
+            GamePhases.LOGGER.warn(String.format("Block tag '%s' was referenced in phase '%s', but the tag is not present!", tagId, id));
+        }
+
         return this;
     }
 
@@ -84,6 +120,10 @@ public class Phase {
      * @return {@code true} if this phase restricts the given {@link Item}, otherwise {@code false}
      */
     public boolean restricts(Item item) {
+        if(blacklistedItemTags.stream().anyMatch(tag -> tag.contains(item))) {
+            return true;
+        }
+
         return blacklistedItems.contains(item);
     }
 
@@ -158,13 +198,13 @@ public class Phase {
         NbtList blockList = new NbtList();
         blacklistedBlocks.forEach(block -> {
             Identifier id = Registry.BLOCK.getId(block);
-            itemList.add(NbtString.of(id.toString()));
+            blockList.add(NbtString.of(id.toString()));
         });
 
         // write blacklisted dimensions
         NbtList dimensionList = new NbtList();
         blacklistedDimensions.forEach(dimension -> {
-            itemList.add(NbtString.of(id));
+            dimensionList.add(NbtString.of(id));
         });
 
         // write blacklisted entities
@@ -176,10 +216,20 @@ public class Phase {
             entityList.add(compound);
         });
 
+        // Write item tags
+        NbtList itemTagList = new NbtList();
+        blacklistedItemTags.forEach(itemTag -> itemTagList.add(NbtString.of(itemTag.getId().toString())));
+
+        // Write block tags
+        NbtList blockTagList = new NbtList();
+        blacklistedBlockTags.forEach(blockTag -> blockTagList.add(NbtString.of(blockTag.getId().toString())));
+
         tag.put("Items", itemList);
         tag.put("Blocks", blockList);
         tag.put("Dimensions", dimensionList);
         tag.put("Entities", entityList);
+        tag.put("ItemTags", itemTagList);
+        tag.put("BlockTags", blockTagList);
         return tag;
     }
 
@@ -189,6 +239,8 @@ public class Phase {
         NbtList blocks = tag.getList("Blocks", NbtType.COMPOUND);
         NbtList dimensions = tag.getList("Dimensions", NbtType.COMPOUND);
         NbtList entities = tag.getList("Entities", NbtType.COMPOUND);
+        NbtList itemTags = tag.getList("ItemTags", NbtType.COMPOUND);
+        NbtList blockTags = tag.getList("BlockTags", NbtType.COMPOUND);
 
         // read items
         List<Item> readItems = new ArrayList<>();
@@ -209,6 +261,23 @@ public class Phase {
             readEntities.add(new Pair<>(Registry.ENTITY_TYPE.get(new Identifier(compound.getString("ID"))), compound.getInt("Range")));
         });
 
-        return new Phase(id, readItems, readBlocks, readDimensions, readEntities);
+        // Tag tags
+        List<Tag.Identified<Item>> readItemTags = new ArrayList<>();
+        itemTags.forEach(element -> {
+            Tag<Item> readItemTag = ItemTags.getTagGroup().getTag(new Identifier(element.asString()));
+            if(readItemTag instanceof Tag.Identified<Item> identified) {
+                readItemTags.add(identified);
+            }
+        });
+
+        List<Tag.Identified<Block>> readBlockTags = new ArrayList<>();
+        blockTags.forEach(element -> {
+            Tag<Block> readBlockTag = BlockTags.getTagGroup().getTag(new Identifier(element.asString()));
+            if(readBlockTag instanceof Tag.Identified<Block> identified) {
+                readBlockTags.add(identified);
+            }
+        });
+
+        return new Phase(id, readItems, readBlocks, readDimensions, readEntities, readItemTags, readBlockTags);
     }
 }
