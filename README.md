@@ -4,11 +4,9 @@ Game Phases is a Fabric alternative to Game Stages by Darkhax.
 It supports the idea of separating the game into "phases," each of which unlocks new content.
 Each phase has a prerequisite, and until that phase is unlocked, all content inside it will be unusable.
 
-One of the great things about Game Phases is that nothing has to be linear. 
-You can have multiple phase routes which do not interact with each-other, or one-off phases with no dependencies.
-This allows you to structure your packs and content however you want!
-
 Game Phases relies on KubeJS for configuration and setup. All Game Phase scripts are in `server_scripts`.
+
+For more information on setting up Game Phases, [visit the wiki page](https://github.com/Draylar/game-phases/wiki/).
 
 ---
 ## Dependencies
