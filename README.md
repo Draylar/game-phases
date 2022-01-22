@@ -52,7 +52,9 @@ Grant the phase to the user when they obtain stone:
       "conditions": {
         "items": [
           {
-            "item": "minecraft:cobblestone"
+            "items": [
+              "minecraft:cobblestone"
+            ]
           }
         ]
       }
