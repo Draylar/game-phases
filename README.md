@@ -4,6 +4,10 @@ Game Phases is a Fabric alternative to Game Stages by Darkhax.
 It supports the idea of separating the game into "phases," each of which unlocks new content.
 Each phase has a prerequisite, and until that phase is unlocked, all content inside it will be unusable.
 
+One of the great things about Game Phases is that nothing has to be linear. 
+You can have multiple phase routes which do not interact with each-other, or one-off phases with no dependencies.
+This allows you to structure your packs and content however you want!
+
 Game Phases relies on KubeJS for configuration and setup. All Game Phase scripts are in `server_scripts`.
 
 ---
@@ -12,10 +16,11 @@ Game Phases relies on KubeJS for configuration and setup. All Game Phase scripts
 Due to Game Phases being a 'modpack-mod' (one that users would not normally install on their own),
 it does not include/JIJ dependencies with it. You will have to install these separately:
 - [FibLib](https://github.com/Haven-King/FibLib) by HavenKing
-- [Cardinal Components Base & World](https://www.curseforge.com/minecraft/mc-mods/cardinal-components) by Onyx Studios
 - [KubeJS](https://www.curseforge.com/minecraft/mc-mods/kubejs-fabric) by shedaniel & Latvian
 - [Rhino](https://www.curseforge.com/minecraft/mc-mods/rhino) by Latvian
 - [Architectury](https://www.curseforge.com/minecraft/mc-mods/architectury-fabric) by shedaniel
+
+A [1.18.1 FibLib build can be found here](https://github.com/Draylar/FibLib/releases/tag/1.3.0-1.18.1) while the upstream PR is reviewed.
 
 ### Compatibility
 
