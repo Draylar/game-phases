@@ -39,10 +39,10 @@ public class Phase {
     private final Set<Pair<EntityType<?>, Integer>> blacklistedEntities;
 
     // Blacklists on tags
-    private final Set<Tag.Identified<Item>> blacklistedItemTags;
-    private final Set<Tag.Identified<Block>> blacklistedBlockTags;
+    private final Set<String> blacklistedItemTags;
+    private final Set<String> blacklistedBlockTags;
 
-    private Phase(String id, @Nullable RecipeManager recipeManager, Set<Item> blacklistedItems, Set<Block> blacklistedBlocks, Set<String> blacklistedDimensions, Set<Pair<EntityType<?>, Integer>> blacklistedEntities, Set<Tag.Identified<Item>> blacklistedItemTags, Set<Tag.Identified<Block>> blacklistedBlockTags) {
+    private Phase(String id, @Nullable RecipeManager recipeManager, Set<Item> blacklistedItems, Set<Block> blacklistedBlocks, Set<String> blacklistedDimensions, Set<Pair<EntityType<?>, Integer>> blacklistedEntities, Set<String> blacklistedItemTags, Set<String> blacklistedBlockTags) {
         this.id = id;
         this.recipeManager = recipeManager;
 
@@ -66,10 +66,33 @@ public class Phase {
         this.blacklistedBlockTags = new HashSet<>();
     }
 
+    /**
+     * @see Phase#item(Item, boolean)
+     */
     public Phase item(Item item) {
         return item(item, true);
     }
 
+    /**
+     * Adds an {@link Item} to this {@link Phase}. If a player has not passed this {@code Phase}, the given item:
+     * <ul>
+     *     <li>Is hidden from REI</li>
+     *     <li>Will not be usable if somehow obtained</li>
+     *     <li>Has an obfuscated stack title</li>
+     *     <li>Is not usable in recipes</li>
+     *     <li>Not able to be crafted</li>
+     * </ul>
+     *
+     * <p>
+     * If {@code restrictRecipes} is set to {@code true}, all {@code Item} instances in {@link Registry#ITEM} will be
+     *  chain-blocked if they are associated to the root {@code Item} in a crafting recipe.
+     * For example, if the specified {@code Item} is {@code minecraft:iron_ingot} and {@code restrictRecipes} is set to {@code true},
+     *  {@code minecraft:iron_pickaxe} will be blocked as well.
+     *
+     * @param item            {@code Item} instance to block while the player does not have this {@code Phase} unlocked
+     * @param restrictRecipes whether {@link Item} instances associated by a recipe should be blocked as well
+     * @return the mutated {@code Phase} being operated on
+     */
     public Phase item(Item item, boolean restrictRecipes) {
         blacklistedItems.add(item);
 
@@ -95,14 +118,17 @@ public class Phase {
         return itemTag(tagId, true);
     }
 
+    /**
+     * Adds all {@link Item} instances stored in the item {@link Tag} represented by the id in {@link ItemTags}, if it exists, to this {@link Phase}.
+     *
+     * @return this phase
+     * @see Phase#item(Item, boolean)
+     */
     public Phase itemTag(String tagId, boolean restrictRecipes) {
         Tag<Item> tag = ItemTags.getTagGroup().getTag(new Identifier(tagId));
-        if(tag instanceof Tag.Identified<Item> identified) {
-            identified.values().forEach(value -> {
-                item(value, restrictRecipes);
-            });
-
-            blacklistedItemTags.add(identified);
+        if(tag != null) {
+            tag.values().forEach(value -> item(value, restrictRecipes));
+            blacklistedItemTags.add(tagId);
         } else {
             GamePhases.LOGGER.warn(String.format("Item tag '%s' was referenced in phase '%s', but the tag is not present!", tagId, id));
         }
@@ -112,9 +138,9 @@ public class Phase {
 
     public Phase blockTag(String tagId, Block replacement) {
         Tag<Block> tag = BlockTags.getTagGroup().getTag(new Identifier(tagId));
-        if(tag instanceof Tag.Identified<Block> identified) {
-            blacklistedBlockTags.add(identified);
-            identified.values().forEach(tagEntry -> block(tagEntry, replacement));
+        if(tag != null) {
+            blacklistedBlockTags.add(tagId);
+            tag.values().forEach(tagEntry -> block(tagEntry, replacement));
         } else {
             GamePhases.LOGGER.warn(String.format("Block tag '%s' was referenced in phase '%s', but the tag is not present!", tagId, id));
         }
@@ -122,6 +148,13 @@ public class Phase {
         return this;
     }
 
+    /**
+     * Adds a {@link Block} to this {@link Phase}. If a player has not passed this {@code Phase}, the given block:
+     * <ul>
+     *     <li>Will be disguised as the specified replacement</li>
+     *     <li>Has modified drops and behavior to model the replacement</li>
+     * </ul>
+     */
     public Phase block(Block block, Block replacement) {
         blacklistedBlocks.add(block);
 
@@ -252,11 +285,11 @@ public class Phase {
 
         // Write item tags
         NbtList itemTagList = new NbtList();
-        blacklistedItemTags.forEach(itemTag -> itemTagList.add(NbtString.of(itemTag.getId().toString())));
+        blacklistedItemTags.forEach(itemTag -> itemTagList.add(NbtString.of(itemTag)));
 
         // Write block tags
         NbtList blockTagList = new NbtList();
-        blacklistedBlockTags.forEach(blockTag -> blockTagList.add(NbtString.of(blockTag.getId().toString())));
+        blacklistedBlockTags.forEach(blockTag -> blockTagList.add(NbtString.of(blockTag)));
 
         tag.put("Items", itemList);
         tag.put("Blocks", blockList);
@@ -296,21 +329,11 @@ public class Phase {
         });
 
         // Tag tags
-        Set<Tag.Identified<Item>> readItemTags = new HashSet<>();
-        itemTags.forEach(element -> {
-            Tag<Item> readItemTag = ItemTags.getTagGroup().getTag(new Identifier(element.asString()));
-            if(readItemTag instanceof Tag.Identified<Item> identified) {
-                readItemTags.add(identified);
-            }
-        });
+        Set<String> readItemTags = new HashSet<>();
+        itemTags.forEach(element -> readItemTags.add(element.asString()));
 
-        Set<Tag.Identified<Block>> readBlockTags = new HashSet<>();
-        blockTags.forEach(element -> {
-            Tag<Block> readBlockTag = BlockTags.getTagGroup().getTag(new Identifier(element.asString()));
-            if(readBlockTag instanceof Tag.Identified<Block> identified) {
-                readBlockTags.add(identified);
-            }
-        });
+        Set<String> readBlockTags = new HashSet<>();
+        blockTags.forEach(element -> readBlockTags.add(element.asString()));
 
         return new Phase(id, null, readItems, readBlocks, readDimensions, readEntities, readItemTags, readBlockTags);
     }
