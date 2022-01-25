@@ -1,6 +1,7 @@
 package draylar.gamephases.network;
 
 import draylar.gamephases.GamePhases;
+import draylar.gamephases.GamePhasesClient;
 import draylar.gamephases.api.Phase;
 import draylar.gamephases.compat.REICompat;
 import draylar.gamephases.impl.PlayerDataProvider;
@@ -31,7 +32,11 @@ public class ClientNetworking {
 
             // Sync phases to client player object.
             client.execute(() -> {
-                ((PlayerDataProvider) client.player).set(phases);
+                if(client.player == null) {
+                    GamePhasesClient.cachedPhasedata = phases;
+                } else {
+                    ((PlayerDataProvider) client.player).set(phases);
+                }
 
                 // REI Compatibility
                 if(FabricLoader.getInstance().isModLoaded("roughlyenoughitems")) {

@@ -2,22 +2,30 @@ package draylar.gamephases;
 
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import draylar.gamephases.api.Phase;
+import draylar.gamephases.impl.PlayerDataProvider;
 import draylar.gamephases.kube.GamePhasesEventJS;
 import draylar.gamephases.network.ClientNetworking;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 
+import java.util.Map;
+
 @Environment(EnvType.CLIENT)
 public class GamePhasesClient implements ClientModInitializer {
+
+    public static Map<String, Boolean> cachedPhasedata;
 
     @Override
     public void onInitializeClient() {
@@ -37,6 +45,17 @@ public class GamePhasesClient implements ClientModInitializer {
                 list.clear();
                 list.add(new LiteralText("Locked").formatted(Formatting.RED));
             }
+        });
+
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            client.execute(() -> {
+                ClientPlayerEntity player = client.player;
+
+                if(cachedPhasedata != null && player != null) {
+                    ((PlayerDataProvider) player).set(cachedPhasedata);
+                    cachedPhasedata = null;
+                }
+            });
         });
     }
 }
