@@ -9,6 +9,8 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 
 public class PhaseCommand {
 
@@ -29,6 +31,7 @@ public class PhaseCommand {
                                 PlayerEntity target = EntityArgumentType.getPlayer(context, "player");
                                 String phase = StringArgumentType.getString(context, "phase");
                                 GamePhases.getPhaseData(target).set(phase, true);
+                                context.getSource().sendFeedback(new LiteralText(String.format("Granted phase \"%s\" to %s.", phase, target.getName().asString())).formatted(Formatting.GRAY), false);
                                 return 1;
                             })))
                     .build();
@@ -44,6 +47,7 @@ public class PhaseCommand {
                                 PlayerEntity target = EntityArgumentType.getPlayer(context, "player");
                                 String phase = StringArgumentType.getString(context, "phase");
                                 GamePhases.getPhaseData(target).set(phase, false);
+                                context.getSource().sendFeedback(new LiteralText(String.format("Revoked phase \"%s\" from %s.", phase, target.getName().asString())).formatted(Formatting.GRAY), false);
                                 return 1;
                             })))
                     .build();
