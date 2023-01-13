@@ -1,7 +1,6 @@
 package draylar.gamephases.mixin.data;
 
 import draylar.gamephases.impl.PlayerDataProvider;
-import draylar.gamephases.kube.GamePhasesEventJS;
 import draylar.gamephases.network.ServerNetworking;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.EntityType;
@@ -17,9 +16,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Mixin(PlayerEntity.class)
@@ -69,7 +66,6 @@ public abstract class PlayerEntityDataMixin extends LivingEntity implements Play
         if(!world.isClient) {
             ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
             ServerNetworking.sendPhaseSync(player, phases);
-            GamePhasesEventJS.sync(player);
         }
     }
 
