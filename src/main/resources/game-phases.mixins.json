@@ -8,6 +8,7 @@
     "block.AbstractBlockMixin",
     "block.BlockMixin",
     "data.PlayerEntityDataMixin",
+    "data.ServerPlayerEntityDataMixin",
     "dimension.EntityDimensionTransferMixin",
     "dimension.FabricDimensionsMixin",
     "entity.EntityJSMixin",

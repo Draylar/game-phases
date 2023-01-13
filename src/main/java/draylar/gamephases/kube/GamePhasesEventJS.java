@@ -9,6 +9,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,23 @@ public class GamePhasesEventJS extends EventJS {
     }
 
     public static void sync(MinecraftServer server) {
+        PacketByteBuf buffer = createBuffer();
+
+        // Send packet to all players
+        server.getPlayerManager().getPlayerList().forEach(player -> {
+            player.networkHandler.sendPacket(ServerPlayNetworking.createS2CPacket(GamePhases.ALL_PHASE_SYNC_ID,  buffer));
+        });
+    }
+
+    public static void sync(ServerPlayerEntity player) {
+        sync(player, createBuffer());
+    }
+
+    private static void sync(ServerPlayerEntity player, PacketByteBuf packet) {
+        player.networkHandler.sendPacket(ServerPlayNetworking.createS2CPacket(GamePhases.ALL_PHASE_SYNC_ID,  packet));
+    }
+
+    private static PacketByteBuf createBuffer() {
         PacketByteBuf packet = PacketByteBufs.create();
 
         // Save phases to packet
@@ -48,10 +66,6 @@ public class GamePhasesEventJS extends EventJS {
 
         tag.put("Phases", l);
         packet.writeNbt(tag);
-
-        // Send packet to all players
-        server.getPlayerManager().getPlayerList().forEach(player -> {
-            player.networkHandler.sendPacket(ServerPlayNetworking.createS2CPacket(GamePhases.ALL_PHASE_SYNC_ID,  packet));
-        });
+        return packet;
     }
 }

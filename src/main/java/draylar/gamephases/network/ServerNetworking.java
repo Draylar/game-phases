@@ -1,6 +1,7 @@
 package draylar.gamephases.network;
 
 import draylar.gamephases.GamePhases;
+import draylar.gamephases.kube.GamePhasesEventJS;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.PacketByteBuf;

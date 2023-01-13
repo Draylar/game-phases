@@ -106,7 +106,7 @@ public class GamePhases implements ModInitializer {
 
         // When a player first joins, sync server-side phase data to the client.
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
-            GamePhases.getPhaseData(handler.player).sync();
+            GamePhases.getPhaseData(handler.player).phases$sync();
         });
     }
 

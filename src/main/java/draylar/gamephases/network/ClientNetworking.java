@@ -35,7 +35,7 @@ public class ClientNetworking {
                 if(client.player == null) {
                     GamePhasesClient.cachedPhasedata = phases;
                 } else {
-                    ((PlayerDataProvider) client.player).set(phases);
+                    ((PlayerDataProvider) client.player).phases$set(phases);
                 }
 
                 // REI Compatibility

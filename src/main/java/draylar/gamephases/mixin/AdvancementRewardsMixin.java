@@ -6,7 +6,6 @@ import draylar.gamephases.GamePhases;
 import draylar.gamephases.impl.AdvancementRewardsManipulator;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -44,7 +43,7 @@ public class AdvancementRewardsMixin implements AdvancementRewardsManipulator {
             at = @At("HEAD"))
     private void applyPhase(ServerPlayerEntity player, CallbackInfo ci) {
         phases.forEach(entry -> {
-            GamePhases.getPhaseData(player).set(entry, true);
+            GamePhases.getPhaseData(player).phases$set(entry, true);
         });
     }
 

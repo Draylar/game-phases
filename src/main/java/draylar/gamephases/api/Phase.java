@@ -16,7 +16,6 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagKey;
@@ -28,7 +27,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Phase {
 
@@ -181,7 +179,7 @@ public class Phase {
 
         // fib the block
         BlockFib fib = BlockFib.builder(block, replacement)
-                .withCondition(player -> !GamePhases.getPhaseData(player).has(this.id))
+                .withCondition(player -> !GamePhases.getPhaseData(player).phases$has(this.id))
                 .modifiesDrops()
                 .build();
 
@@ -257,7 +255,7 @@ public class Phase {
      * @return {@code true} if the given {@link PlayerEntity} has passed/unlocked this phase, otherwise {@code false}
      */
     public boolean hasUnlocked(PlayerEntity player) {
-        return GamePhases.getPhaseData(player).has(this.id);
+        return GamePhases.getPhaseData(player).phases$has(this.id);
     }
 
     /**
@@ -323,12 +321,12 @@ public class Phase {
 
     public static Phase fromTag(NbtCompound tag) {
         String id = tag.getString("ID");
-        NbtList items = tag.getList("Items", NbtType.COMPOUND);
-        NbtList blocks = tag.getList("Blocks", NbtType.COMPOUND);
-        NbtList dimensions = tag.getList("Dimensions", NbtType.COMPOUND);
+        NbtList items = tag.getList("Items", NbtType.STRING);
+        NbtList blocks = tag.getList("Blocks", NbtType.STRING);
+        NbtList dimensions = tag.getList("Dimensions", NbtType.STRING);
         NbtList entities = tag.getList("Entities", NbtType.COMPOUND);
-        NbtList itemTags = tag.getList("ItemTags", NbtType.COMPOUND);
-        NbtList blockTags = tag.getList("BlockTags", NbtType.COMPOUND);
+        NbtList itemTags = tag.getList("ItemTags", NbtType.STRING);
+        NbtList blockTags = tag.getList("BlockTags", NbtType.STRING);
 
         // read items
         Set<Item> readItems = new HashSet<>();
@@ -344,7 +342,7 @@ public class Phase {
 
         // read entities
         Set<Pair<EntityType<?>, Integer>> readEntities = new HashSet<>();
-        dimensions.forEach(element -> {
+        entities.forEach(element -> {
             NbtCompound compound = (NbtCompound) element;
             readEntities.add(new Pair<>(Registry.ENTITY_TYPE.get(new Identifier(compound.getString("ID"))), compound.getInt("Range")));
         });

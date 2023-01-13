@@ -1,14 +1,11 @@
 package draylar.gamephases.mixin.data;
 
-import draylar.gamephases.GamePhases;
 import draylar.gamephases.impl.PlayerDataProvider;
+import draylar.gamephases.kube.GamePhasesEventJS;
 import draylar.gamephases.network.ServerNetworking;
 import net.fabricmc.fabric.api.util.NbtType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
@@ -20,7 +17,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Mixin(PlayerEntity.class)
@@ -37,8 +36,9 @@ public abstract class PlayerEntityDataMixin extends LivingEntity implements Play
      * @param phase phase to check for unlock status
      * @return {@code true} if the {@link net.minecraft.entity.player.PlayerEntity} this component is associated with has unlocked the given phase.
      */
+    @Unique
     @Override
-    public boolean has(String phase) {
+    public boolean phases$has(String phase) {
         return phases.getOrDefault(phase, false);
     }
 
@@ -48,24 +48,42 @@ public abstract class PlayerEntityDataMixin extends LivingEntity implements Play
      * @param phase  phase to configure
      * @param status new status of the phase
      */
+    @Unique
     @Override
-    public void set(String phase, boolean status) {
+    public void phases$set(String phase, boolean status) {
         phases.put(phase, status);
-        sync();
+        phases$sync();
     }
 
+    @Unique
     @Override
-    public void set(Map<String, Boolean> all) {
+    public void phases$set(Map<String, Boolean> all) {
         phases.clear();
         phases.putAll(all);
     }
 
+    @Unique
     @Override
-    public void sync() {
+    public void phases$sync() {
         // Sync S2C if we are on the server.
         if(!world.isClient) {
-            ServerNetworking.sendPhaseSync((ServerPlayerEntity) (Object) this, phases);
+            ServerPlayerEntity player = (ServerPlayerEntity) (Object) this;
+            ServerNetworking.sendPhaseSync(player, phases);
+            GamePhasesEventJS.sync(player);
         }
+    }
+
+    @Unique
+    @Override
+    public Map<String, Boolean> phase$getUnlocked() {
+        return phases;
+    }
+
+    @Unique
+    @Override
+    public void phase$copyFrom(PlayerDataProvider data) {
+        this.phases.clear();
+        this.phases.putAll(data.phase$getUnlocked());
     }
 
     @Inject(method = "writeCustomDataToNbt", at = @At("HEAD"))
