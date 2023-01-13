@@ -15,7 +15,25 @@ public class EntityJSMixin {
 
     public boolean hasPhase(String phase) {
         if(minecraftEntity instanceof PlayerEntity player) {
-            return GamePhases.getPhaseData(player).has(phase);
+            return GamePhases.getPhaseData(player).phases$has(phase);
+        } else {
+            return false;
+        }
+    }
+
+    public boolean grantPhase(String phase) {
+        if(minecraftEntity instanceof PlayerEntity player) {
+            GamePhases.getPhaseData(player).phases$set(phase, true);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean revokePhase(String phase) {
+        if(minecraftEntity instanceof PlayerEntity player) {
+            GamePhases.getPhaseData(player).phases$set(phase, false);
+            return true;
         } else {
             return false;
         }
