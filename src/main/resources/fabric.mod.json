@@ -17,6 +17,9 @@
     ],
     "main": [
       "draylar.gamephases.GamePhases"
+    ],
+    "rei_client": [
+      "draylar.gamephases.compat.REICompat"
     ]
   },
   "mixins": [
@@ -26,10 +29,5 @@
     "fabricloader": "*",
     "fabric": "*",
     "minecraft": "*"
-  },
-  "custom": {
-    "cardinal-components": [
-      "gamephases:phases"
-    ]
   }
 }

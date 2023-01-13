@@ -40,7 +40,7 @@ public class ClientNetworking {
 
                 // REI Compatibility
                 if(FabricLoader.getInstance().isModLoaded("roughlyenoughitems")) {
-                    REICompat.hideBlockedItems();
+                    REICompat.refreshHiddenItems();
                 }
             });
         });
