@@ -24,9 +24,11 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 public class Phase {
 
@@ -67,10 +69,22 @@ public class Phase {
         this.blacklistedBlockTags = new HashSet<>();
     }
 
+    public <T> List<T> match(String regex, Registry<T> registry) {
+        Pattern pattern = Pattern.compile(regex);
+        List<T> matching = new ArrayList<>();
+        for (T t : registry) {
+            if(pattern.matcher(registry.getId(t).toString()).find()) {
+                matching.add(t);
+            }
+        }
+
+        return matching;
+    }
+
     /**
-     * @see Phase#item(Item, boolean)
+     * @see Phase#item(String, boolean)
      */
-    public Phase item(Item item) {
+    public Phase item(String item) {
         return item(item, true);
     }
 
@@ -90,26 +104,28 @@ public class Phase {
      * For example, if the specified {@code Item} is {@code minecraft:iron_ingot} and {@code restrictRecipes} is set to {@code true},
      *  {@code minecraft:iron_pickaxe} will be blocked as well.
      *
-     * @param item            {@code Item} instance to block while the player does not have this {@code Phase} unlocked
+     * @param itemPattern
      * @param restrictRecipes whether {@link Item} instances associated by a recipe should be blocked as well
      * @return the mutated {@code Phase} being operated on
      */
-    public Phase item(Item item, boolean restrictRecipes) {
-        blacklistedItems.add(item);
+    private Phase item(String itemPattern, boolean restrictRecipes) {
+        for (Item item : match(itemPattern, Registry.ITEM)) {
+            blacklistedItems.add(item);
 
-        // Search through all crafting recipes.
-        // For each recipe that uses the provided item as a recipe ingredient, disable the result.
-        // TODO: nested crafting checks (eg. Iron Ingot -> Iron Pickaxe -> Diamond Pickaxe)?
-        if(restrictRecipes && recipeManager != null) {
-            recipeManager.listAllOfType(RecipeType.CRAFTING).forEach(craftingRecipe -> {
-                craftingRecipe.getIngredients().stream().map(Ingredient::getMatchingStacks).forEach(ingredients -> {
-                    for (ItemStack stack : ingredients) {
-                        if(stack.getItem().equals(item)) {
-                            blacklistedItems.add(craftingRecipe.getOutput().getItem());
+            // Search through all crafting recipes.
+            // For each recipe that uses the provided item as a recipe ingredient, disable the result.
+            // TODO: nested crafting checks (eg. Iron Ingot -> Iron Pickaxe -> Diamond Pickaxe)?
+            if(restrictRecipes && recipeManager != null) {
+                recipeManager.listAllOfType(RecipeType.CRAFTING).forEach(craftingRecipe -> {
+                    craftingRecipe.getIngredients().stream().map(Ingredient::getMatchingStacks).forEach(ingredients -> {
+                        for (ItemStack stack : ingredients) {
+                            if(stack.getItem().equals(item)) {
+                                blacklistedItems.add(craftingRecipe.getOutput().getItem());
+                            }
                         }
-                    }
+                    });
                 });
-            });
+            }
         }
 
         return this;
@@ -123,7 +139,7 @@ public class Phase {
      * Adds all {@link Item} instances stored in the item {@link Tag} represented by the id in {@link ItemTags}, if it exists, to this {@link Phase}.
      *
      * @return this phase
-     * @see Phase#item(Item, boolean)
+     * @see Phase#item(String, boolean)
      */
     public Phase itemTag(String tagId, boolean restrictRecipes) {
         // this is horrific, but don't know a better way to do it
@@ -135,7 +151,7 @@ public class Phase {
             if(key.id().toString().equals(tagId) || key.id().getPath().equals(tagId)) {
                 for (Item item : Registry.ITEM) {
                     if(item.getRegistryEntry().isIn(key)) {
-                        item(item, restrictRecipes);
+                        item(Registry.ITEM.getId(item).toString(), restrictRecipes);
                     }
                 }
 
@@ -155,7 +171,7 @@ public class Phase {
             if(key.id().toString().equals(tagId) || key.id().getPath().equals(tagId)) {
                 for (Block block : Registry.BLOCK) {
                     if(block.getRegistryEntry().isIn(key)) {
-                        block(block, replacement);
+                        block(Registry.BLOCK.getId(block).toString(), replacement);
                     }
                 }
 
@@ -174,19 +190,22 @@ public class Phase {
      *     <li>Has modified drops and behavior to model the replacement</li>
      * </ul>
      */
-    public Phase block(Block block, Block replacement) {
-        blacklistedBlocks.add(block);
+    public Phase block(String blockPattern, Block replacement) {
+        for (Block block : match(blockPattern, Registry.BLOCK)) {
+            blacklistedBlocks.add(block);
 
-        // fib the block
-        BlockFib fib = BlockFib.builder(block, replacement)
-                .withCondition(player -> !GamePhases.getPhaseData(player).phases$has(this.id))
-                .modifiesDrops()
-                .build();
+            // fib the block
+            BlockFib fib = BlockFib.builder(block, replacement)
+                    .withCondition(player -> !GamePhases.getPhaseData(player).phases$has(this.id))
+                    .modifiesDrops()
+                    .build();
 
-        Identifier inID = Registry.BLOCK.getId(block);
-        Identifier outID = Registry.BLOCK.getId(replacement);
-        Identifier id = new Identifier(getId(), String.format("%s_%s", inID.getPath(), outID.getPath()));
-        BlockFibRegistry.register(id, fib);
+            Identifier inID = Registry.BLOCK.getId(block);
+            Identifier outID = Registry.BLOCK.getId(replacement);
+            Identifier id = new Identifier(getId(), String.format("%s_%s", inID.getPath(), outID.getPath()));
+            BlockFibRegistry.register(id, fib);
+        }
+
         return this;
     }
 
