@@ -19,13 +19,16 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Phase {
 
@@ -125,26 +128,44 @@ public class Phase {
      * @see Phase#item(Item, boolean)
      */
     public Phase itemTag(String tagId, boolean restrictRecipes) {
-        Tag<Item> tag = ItemTags.getTagGroup().getTag(new Identifier(tagId));
-        if(tag != null) {
-            tag.values().forEach(value -> item(value, restrictRecipes));
-            blacklistedItemTags.add(tagId);
-        } else {
-            GamePhases.LOGGER.warn(String.format("Item tag '%s' was referenced in phase '%s', but the tag is not present!", tagId, id));
+        // this is horrific, but don't know a better way to do it
+        List<TagKey<Item>> tags = Registry.ITEM.streamTags().toList();
+        for (TagKey<Item> key : tags) {
+
+            // Match against x:path, or namespace:path given tagId
+            // Search Item registry for any items matching this tag, and add to blacklist
+            if(key.id().toString().equals(tagId) || key.id().getPath().equals(tagId)) {
+                for (Item item : Registry.ITEM) {
+                    if(item.getRegistryEntry().isIn(key)) {
+                        item(item, restrictRecipes);
+                    }
+                }
+
+                // only process 1 iteration
+                return this;
+            }
         }
 
+        // No return early means we did not find a tag match - log in chat to help catch potential issues.
+        GamePhases.LOGGER.warn(String.format("Item tag '%s' was referenced in phase '%s', but the tag is not present!", tagId, id));
         return this;
     }
 
     public Phase blockTag(String tagId, Block replacement) {
-        Tag<Block> tag = BlockTags.getTagGroup().getTag(new Identifier(tagId));
-        if(tag != null) {
-            blacklistedBlockTags.add(tagId);
-            tag.values().forEach(tagEntry -> block(tagEntry, replacement));
-        } else {
-            GamePhases.LOGGER.warn(String.format("Block tag '%s' was referenced in phase '%s', but the tag is not present!", tagId, id));
+        List<TagKey<Block>> tags = Registry.BLOCK.streamTags().toList();
+        for (TagKey<Block> key : tags) {
+            if(key.id().toString().equals(tagId) || key.id().getPath().equals(tagId)) {
+                for (Block block : Registry.BLOCK) {
+                    if(block.getRegistryEntry().isIn(key)) {
+                        block(block, replacement);
+                    }
+                }
+
+                return this;
+            }
         }
 
+        GamePhases.LOGGER.warn(String.format("Block tag '%s' was referenced in phase '%s', but the tag is not present!", tagId, id));
         return this;
     }
 
