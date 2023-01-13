@@ -309,7 +309,7 @@ public class Phase {
         // write blacklisted dimensions
         NbtList dimensionList = new NbtList();
         blacklistedDimensions.forEach(dimension -> {
-            dimensionList.add(NbtString.of(id));
+            dimensionList.add(NbtString.of(dimension));
         });
 
         // write blacklisted entities
