@@ -28,6 +28,8 @@
   "depends": {
     "fabricloader": "*",
     "fabric": "*",
-    "minecraft": "*"
+    "minecraft": "*",
+    "rhino": "*",
+    "kubejs": "*"
   }
 }
