@@ -13,12 +13,10 @@ For more information on setting up Game Phases, [visit the wiki page](https://gi
 
 Due to Game Phases being a 'modpack-mod' (one that users would not normally install on their own),
 it does not include/JIJ dependencies with it. You will have to install these separately:
-- [FibLib](https://github.com/Haven-King/FibLib) by HavenKing
+- [FibLib](https://www.curseforge.com/minecraft/mc-mods/fiblib) by HavenKing
 - [KubeJS](https://www.curseforge.com/minecraft/mc-mods/kubejs-fabric) by shedaniel & Latvian
 - [Rhino](https://www.curseforge.com/minecraft/mc-mods/rhino) by Latvian
 - [Architectury](https://www.curseforge.com/minecraft/mc-mods/architectury-fabric) by shedaniel
-
-A [1.18.1 FibLib build can be found here](https://github.com/Draylar/FibLib/releases/tag/1.3.0-1.18.1) while the upstream PR is reviewed.
 
 ### Compatibility
 
