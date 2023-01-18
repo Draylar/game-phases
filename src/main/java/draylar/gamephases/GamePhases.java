@@ -9,6 +9,7 @@ import draylar.gamephases.command.PhaseCommand;
 import draylar.gamephases.impl.PlayerDataProvider;
 import draylar.gamephases.kube.GamePhasesEventJS;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -44,6 +45,10 @@ public class GamePhases implements ModInitializer {
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, manager, n) -> {
             new GamePhasesEventJS(server).post(ScriptType.SERVER, "gamephases.initialize");
             GamePhasesEventJS.sync(server);
+        });
+
+        ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
+            ((PlayerDataProvider) newPlayer).phases$sync();
         });
 
         // Use KubeJS events for item handling
