@@ -4,6 +4,7 @@ import dev.architectury.event.EventResult;
 import dev.architectury.event.events.common.PlayerEvent;
 import dev.architectury.event.events.common.TickEvent;
 import dev.latvian.mods.kubejs.script.ScriptType;
+import draylar.gamephases.api.Phase;
 import draylar.gamephases.command.PhaseCommand;
 import draylar.gamephases.impl.PlayerDataProvider;
 import draylar.gamephases.kube.GamePhasesEventJS;
@@ -22,6 +23,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 
 public class GamePhases implements ModInitializer {
 
@@ -54,7 +57,7 @@ public class GamePhases implements ModInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
+            boolean allowed = allowed(item, player);
             return !allowed ? EventResult.interruptFalse() : EventResult.pass();
         });
 
@@ -65,7 +68,7 @@ public class GamePhases implements ModInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
+            boolean allowed = allowed(item, player);
             return !allowed ? TypedActionResult.fail(stackInHand) : TypedActionResult.pass(stackInHand);
         });
 
@@ -76,7 +79,7 @@ public class GamePhases implements ModInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
+            boolean allowed = allowed(item, player);
             return !allowed ? ActionResult.FAIL : ActionResult.PASS;
         });
 
@@ -87,7 +90,7 @@ public class GamePhases implements ModInitializer {
 
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
+            boolean allowed = allowed(item, player);
             return !allowed ? ActionResult.FAIL : ActionResult.PASS;
         });
 
@@ -96,7 +99,7 @@ public class GamePhases implements ModInitializer {
             for (Hand hand : Hand.values()) {
                 ItemStack stack = player.getStackInHand(hand);
                 Item item = stack.getItem();
-                boolean allowed = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(player));
+                boolean allowed = allowed(item, player);
                 if(!allowed) {
                     player.dropStack(stack.copy());
                     stack.decrement(stack.getCount());
@@ -109,6 +112,17 @@ public class GamePhases implements ModInitializer {
             GamePhases.getPhaseData(handler.player).phases$sync();
             GamePhasesEventJS.sync(handler.player);
         });
+    }
+
+    public static boolean allowed(Item item, PlayerEntity player) {
+        ArrayList<Phase> phases = new ArrayList<>(GamePhasesEventJS.getPhases().values());
+        for (Phase phase : phases) {
+            if(phase.restricts(item) && !phase.hasUnlocked(player)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static Identifier id(String name) {
