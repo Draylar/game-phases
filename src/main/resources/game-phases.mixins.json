@@ -14,7 +14,8 @@
     "entity.EntityJSMixin",
     "entity.SpawnerHelperMixin",
     "item.CraftingScreenHandlerMixin",
-    "item.ScreenHandlerMixin"
+    "item.ScreenHandlerMixin",
+    "loot.LootTableMixin"
   ],
   "client": [
   ],
