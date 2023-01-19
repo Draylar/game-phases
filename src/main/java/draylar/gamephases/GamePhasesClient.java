@@ -32,10 +32,15 @@ public class GamePhasesClient implements ClientModInitializer {
         ClientTooltipEvent.ITEM.register((stack, list, context) -> {
             Item item = stack.getItem();
 
+            // prevent rare NPE where player is null when rendering tooltips
+            if(MinecraftClient.getInstance().player == null) {
+                return;
+            }
+
             // Check all registered Phases.
             // If a phase blacklists the given item and the player does not have it unlocked, stop the interaction.
-            boolean b = GamePhasesEventJS.getPhases().values().stream().filter(phase -> phase.restricts(item)).allMatch(phase -> phase.hasUnlocked(MinecraftClient.getInstance().player));
-            if (!b) {
+            boolean isItemAllowed = GamePhases.allowed(item, MinecraftClient.getInstance().player);
+            if (!isItemAllowed) {
                 list.clear();
                 list.add(new LiteralText("Locked").formatted(Formatting.RED));
             }
