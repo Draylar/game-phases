@@ -17,6 +17,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Formatting;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -29,6 +30,34 @@ public class PhaseCommand {
             LiteralCommandNode<ServerCommandSource> root = CommandManager.literal("phase")
                     .requires(source -> source.hasPermissionLevel(2))
                     .build();
+
+            var revokeAll = CommandManager.literal("revoke_all")
+                    .then(CommandManager.argument("players", EntityArgumentType.players())
+                            .executes(context -> {
+                                Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+                                for (ServerPlayerEntity player : players) {
+                                    GamePhasesEventJS.getPhases().forEach((key, phase) -> {
+                                        GamePhases.getPhaseData(player).phases$set(key, false);
+                                    });
+                                }
+
+                                context.getSource().sendFeedback(new LiteralText(String.format("Revoked all phases to %d players.", players.size())).formatted(Formatting.GRAY), false);
+                                return 1;
+                            })).build();
+
+            var grantAll = CommandManager.literal("grant_all")
+                    .then(CommandManager.argument("players", EntityArgumentType.players())
+                            .executes(context -> {
+                                Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
+                                for (ServerPlayerEntity player : players) {
+                                    GamePhasesEventJS.getPhases().forEach((key, phase) -> {
+                                        GamePhases.getPhaseData(player).phases$set(key, true);
+                                    });
+                                }
+
+                                context.getSource().sendFeedback(new LiteralText(String.format("Granted all phases to %d players.", players.size())).formatted(Formatting.GRAY), false);
+                                return 1;
+                            })).build();
 
             var grant = CommandManager.literal("grant")
                     .then(CommandManager.argument("player", EntityArgumentType.player())
@@ -82,6 +111,8 @@ public class PhaseCommand {
             root.addChild(revoke);
             root.addChild(grant);
             root.addChild(status);
+            root.addChild(revokeAll);
+            root.addChild(grantAll);
             dispatcher.getRoot().addChild(root);
         });
     }
