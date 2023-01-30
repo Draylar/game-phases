@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "game-phases",
+  "version": "${version}",
+  "name": "Game Phases",
+  "description": "",
+  "authors": [
+    "Draylar"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/game-phases/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "dev.draylar.gamephases.fabric.GamePhasesFabric"
+    ],
+    "rei_client": [
+      "dev.draylar.gamephases.compat.REICompat"
+    ]
+  },
+  "mixins": [
+    "gamephases-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "fabric": "*",
+    "minecraft": "*",
+    "rhino": "*",
+    "kubejs": "*"
+  }
+}

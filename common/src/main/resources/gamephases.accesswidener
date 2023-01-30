@@ -1,0 +1,4 @@
+accessWidener   v2  named
+
+accessible class net/minecraft/world/chunk/PalettedContainer$Data
+accessible method net/minecraft/server/world/ThreadedAnvilChunkStorage handlePlayerAddedOrRemoved (Lnet/minecraft/server/network/ServerPlayerEntity;Z)V

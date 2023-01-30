@@ -1,0 +1,46 @@
+architectury {
+    common(rootProject.enabled_platforms.split(","))
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/gamephases.accesswidener")
+}
+
+repositories {
+    maven { url "https://maven.shedaniel.me" }
+
+    maven {
+        url "https://maven.saps.dev/minecraft"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
+    modApi "dev.architectury:architectury:${rootProject.architectury_version}"
+
+    // KubeJS
+    modApi("dev.latvian.mods:rhino:${rootProject.rhino_version}")
+    modImplementation("dev.latvian.mods:kubejs:${rootProject.kubejs_version}")
+
+    // Mod Dependencies
+    modApi "dev.draylar:illusion-fabric:${rootProject.illusion_version}"
+    modApi ("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
+    modApi ("me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}")
+}
+
+publishing {
+    publications {
+        mavenCommon(MavenPublication) {
+            artifactId = rootProject.archives_base_name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+    }
+}
