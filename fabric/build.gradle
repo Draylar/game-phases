@@ -22,6 +22,15 @@ configurations {
     developmentFabric.extendsFrom common
 }
 
+repositories {
+    maven {
+        url "https://maven.saps.dev/minecraft"
+        content {
+            includeGroup "dev.latvian.mods"
+        }
+    }
+}
+
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modApi "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
@@ -31,6 +40,7 @@ dependencies {
     modApi "dev.draylar:illusion-fabric:${rootProject.illusion_version}"
     modApi ("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
     modApi ("me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}")
+    modApi("dev.latvian.mods:kubejs-fabric:${rootProject.kubejs_version}")
 
     // Modules
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

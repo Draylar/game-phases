@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.draylar.gamephases.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "FabricDimensionsMixin",
+    "EntityDimensionTransferMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

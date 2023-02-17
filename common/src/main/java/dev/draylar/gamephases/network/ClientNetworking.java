@@ -1,6 +1,7 @@
 package dev.draylar.gamephases.network;
 
 import dev.architectury.networking.NetworkManager;
+import dev.architectury.platform.Platform;
 import dev.draylar.gamephases.GamePhasesClient;
 import dev.draylar.gamephases.api.Phase;
 import dev.draylar.gamephases.compat.REICompat;
@@ -41,7 +42,7 @@ public class ClientNetworking {
                 }
 
                 // REI Compatibility
-                if(FabricLoader.getInstance().isModLoaded("roughlyenoughitems")) {
+                if(Platform.isModLoaded("roughlyenoughitems")) {
                     REICompat.refreshHiddenItems();
                 }
             });

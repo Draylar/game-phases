@@ -1,4 +1,4 @@
-package dev.draylar.gamephases.mixin.dimension;
+package dev.draylar.gamephases.fabric.mixin;
 
 import dev.draylar.gamephases.kube.GamePhasesEventJS;
 import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;

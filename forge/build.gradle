@@ -43,10 +43,10 @@ dependencies {
     modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
     // Mod Dependencies
-//    modApi "dev.draylar:illusion-forge:${rootProject.illusion_version}"
-//    modApi ("me.shedaniel:RoughlyEnoughItems-forge:${project.rei_version}")
-//    modApi ("me.shedaniel:RoughlyEnoughItems-api-forge:${project.rei_version}")
-    modApi("dev.latvian.mods:kubejs:${rootProject.kubejs_version}")
+    modApi "dev.draylar:illusion-forge:${rootProject.illusion_version}"
+    modRuntimeOnly ("me.shedaniel:RoughlyEnoughItems-forge:${project.rei_version}")
+    modCompileOnly ("me.shedaniel:RoughlyEnoughItems-api-forge:${project.rei_version}")
+    modApi("dev.latvian.mods:kubejs-forge:${rootProject.kubejs_version}")
 
     // Modules
     common(project(path: ":common", configuration: "namedElements")) { transitive false }

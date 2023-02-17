@@ -7,8 +7,6 @@
     "AdvancementRewardsMixin",
     "data.PlayerEntityDataMixin",
     "data.ServerPlayerEntityDataMixin",
-    "dimension.EntityDimensionTransferMixin",
-    "dimension.FabricDimensionsMixin",
     "entity.EntityJSMixin",
     "entity.SpawnerHelperMixin",
     "event.attack.ServerPlayerEntityMixin",

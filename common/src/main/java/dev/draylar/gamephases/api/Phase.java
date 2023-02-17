@@ -24,6 +24,8 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -237,7 +239,11 @@ public class Phase {
      * @return {@code true} if this phase restricts the given {@link ServerWorld}/dimension, otherwise {@code false}
      */
     public boolean restricts(ServerWorld world) {
-        return blacklistedDimensions.contains(world.getRegistryKey().getValue().toString());
+        return restricts(world.getRegistryKey());
+    }
+
+    public boolean restricts(RegistryKey<World> world) {
+        return blacklistedDimensions.contains(world.getValue().toString());
     }
 
     /**
