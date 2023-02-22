@@ -27,8 +27,7 @@ dependencies {
 
     // Mod Dependencies
     modApi "dev.draylar:illusion-fabric:${rootProject.illusion_version}"
-    modApi ("me.shedaniel:RoughlyEnoughItems-fabric:${project.rei_version}")
-    modApi ("me.shedaniel:RoughlyEnoughItems-api-fabric:${project.rei_version}")
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:${rootProject.rei_version}"
 }
 
 publishing {
