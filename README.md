@@ -13,7 +13,7 @@ For more information on setting up Game Phases, [visit the wiki page](https://gi
 
 Due to Game Phases being a 'modpack-mod' (one that users would not normally install on their own),
 it does not include/JIJ dependencies with it. You will have to install these separately:
-- [FibLib](https://www.curseforge.com/minecraft/mc-mods/fiblib) by HavenKing
+- [Illusion](https://github.com/Draylar/illusion) by Draylar
 - [KubeJS](https://www.curseforge.com/minecraft/mc-mods/kubejs-fabric) by shedaniel & Latvian
 - [Rhino](https://www.curseforge.com/minecraft/mc-mods/rhino) by Latvian
 - [Architectury](https://www.curseforge.com/minecraft/mc-mods/architectury-fabric) by shedaniel
@@ -101,11 +101,11 @@ onEvent('gamephases.initialize', event => {
 ## Block Restrictions
 
 Block Restrictions are similar to Item Restrictions. 
-[FibLib](https://github.com/Haven-King/FibLib) is used to restrict the visibility of hidden blocks,
+[Illusion](https://github.com/Draylar/illusion) is used to restrict the visibility of hidden blocks,
 and additional tweaks are implemented to make the hidden block as non-visible as possible.
 
 General blacklist restrictions include:
-- Full visibility change through FibLib
+- Full visibility change through Illusion
 - Altered break drops
 
 ### Gating blocks behind a phase:
