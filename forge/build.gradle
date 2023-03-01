@@ -46,6 +46,7 @@ dependencies {
     modApi "dev.draylar:illusion-forge:${rootProject.illusion_version}"
     modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}"
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-api-forge:${rootProject.rei_version}"
+    modCompileOnly "me.shedaniel:RoughlyEnoughItems-forge:${rootProject.rei_version}"
     modApi("dev.latvian.mods:kubejs-forge:${rootProject.kubejs_version}")
 
     // Modules

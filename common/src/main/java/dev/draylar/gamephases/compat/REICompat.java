@@ -35,6 +35,8 @@ public class REICompat implements REIClientPlugin {
     }
 
     public static void refreshHiddenItems() {
-        filter.markDirty();
+        if(filter != null) {
+            filter.markDirty();
+        }
     }
 }
