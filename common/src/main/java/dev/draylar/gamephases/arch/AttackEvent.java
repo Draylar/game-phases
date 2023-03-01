@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 public interface AttackEvent {
 
     /**
-     * @see AttackEvent.PickupItem#attack(PlayerEntity, ItemEntity, ItemStack)
+     * @see AttackEvent.PickupItem#attack(PlayerEntity, World, Hand, Entity, HitResult)
      */
     Event<AttackEvent.PickupItem> ATTACK_ENTITY = EventFactory.createLoop();
 
@@ -25,8 +25,7 @@ public interface AttackEvent {
          * Equivalent to Forge's {@code ItemPickupEvent} event.
          *
          * @param player The player.
-         * @param entity The {@link ItemEntity} that the player picked up.
-         * @param stack  The content of the {@link ItemEntity}.
+         * @param target The {@link ItemEntity} that the player picked up.
          */
         EventResult attack(PlayerEntity player, World world, Hand hand, Entity target, HitResult result);
     }

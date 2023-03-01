@@ -259,9 +259,11 @@ public class Phase {
      *
      * <p>
      * Example:
-     * <ul>minecraft:creeper, 128
-     * <ul>minecraft:creeper, 70
-     * <ul>Result: 70
+     * <ul>
+     *     <li>minecraft:creeper, 128</li>
+     *     <li>minecraft:creeper, 70</li>
+     *     <li>Result: 70</li>
+     * </ul>
      *
      * @param type type restrictions to check for minimum radius
      * @return the minimum spawn restriction of the given type, or -1 if it is not restricted
