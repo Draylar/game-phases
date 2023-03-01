@@ -26,7 +26,7 @@ dependencies {
     modImplementation("dev.latvian.mods:kubejs:${rootProject.kubejs_version}")
 
     // Mod Dependencies
-    modApi "dev.draylar:illusion-fabric:${rootProject.illusion_version}"
+    modApi "dev.draylar:illusion-common:${rootProject.illusion_version}"
     modCompileOnly "me.shedaniel:RoughlyEnoughItems-api:${rootProject.rei_version}"
 }
 

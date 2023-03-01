@@ -16,6 +16,7 @@
   ],
   "client": [
     "client.ClientPlayNetworkHandlerMixin",
+    "data.ClientPlayNetworkHandlerMixin",
     "event.attack.ClientPlayerInteractionManagerMixin"
   ],
   "injectors": {
